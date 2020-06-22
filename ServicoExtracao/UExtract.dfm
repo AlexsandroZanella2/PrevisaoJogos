@@ -6,10 +6,7 @@ object Service1: TService1
   Height = 228
   Width = 323
   object database: TpFIBDatabase
-    Connected = True
-    DBName = 
-      'localhost:C:\Users\SDZANELLA\Documents\GitHub\PrevisaoJogos\Bin\' +
-      'DADOS.FDB'
+    DBName = 'localhost:C:\ServicoExtracao\DADOS.FDB'
     DBParams.Strings = (
       'password=masterkey'
       'user_name=SYSDBA')
@@ -21,7 +18,6 @@ object Service1: TService1
     Top = 128
   end
   object transacao: TpFIBTransaction
-    Active = True
     DefaultDatabase = database
     Left = 200
     Top = 128
@@ -37,7 +33,6 @@ object Service1: TService1
     SelectSQL.Strings = (
       'select *'
       'from JOGOS_TENISMESA')
-    Active = True
     Transaction = transSelect
     Database = database
     Left = 224
@@ -118,7 +113,6 @@ object Service1: TService1
     end
   end
   object transSelect: TpFIBTransaction
-    Active = True
     DefaultDatabase = database
     Left = 128
     Top = 56

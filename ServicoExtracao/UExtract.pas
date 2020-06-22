@@ -143,6 +143,7 @@ begin
     begin
             pagina.text := getURL('https://m.flashscore.com.br/jogo/'+dataset.FieldValue('link',false));
             if pagina.text.contains('<div class="detail">Encerrado') then begin
+            try
                pagina.text    := copy(pagina.text,pos('class="detail"><b>',pagina.text)+length('class="detail"><b>'));
                   scoreTime1  := copy(pagina.text, 1,pos(':',pagina.text)-1);
                pagina.text    := copy(pagina.text, pos(':',pagina.text)+1);
@@ -187,6 +188,9 @@ begin
                   set5     := 0;
                   set5_    := 0;
               end;
+            except
+               logErros.add(datetimetostr(now) + ' : Não foi possível atualizar o registro código ' +dataset.FieldByName('codigo').AsString + '!');
+            end;
 
                 try
                       Query.SQL.Text:= 'update JOGOS_TENISMESA '+
@@ -386,12 +390,17 @@ ipBanco     : string;
 localBanco  : string;
 LogExecucao: tstringList;
 g:integer;
+controletempo:ttime;
+teste_scans:string;
 begin
+
   g:=0;
+
      try
         config              :=  TIniFile.create(ExtractFilePath(Application.ExeName) + 'config.ini');
         ipBanco             :=  config.ReadString('config','ipbanco','');
         localBanco          :=  config.ReadString('config','localbanco','');
+        teste_scans         :=  config.ReadString('config','tempo_scans','');
         tempo_scans         :=  strtoint(config.ReadString('config','tempo_scans',''));
         horaScanDiario      :=  strtotime(config.ReadString('config','hora_extracao_diaria',''));
         horaScanDiarioFim   :=  strtotime(config.ReadString('config','hora_extracao_diaria_fim',''));
@@ -409,14 +418,21 @@ begin
         database.Connected  := true;
         transacao.active    :=true;
      except
-        showmessage('Não foi possível conectar ao banco ' + database.DBName + '!');
+        LogExecucao := tstringlist.Create;
+        LogExecucao.Add(formatdatetime('dd-MM-yyyy hh:mm',now) + ' NÃO FOI POSSIVEL CONECTAR AO BANCO');
+      LogExecucao.SaveToFile(Pastalogs + 'LogStarts'+ formatdatetime('dd.MM.yyyy.hhmm',now) +'.txt');
+      LogExecucao.Destroy;
         application.Destroy;
      end;
 
-
+     if teste_scans = '' then
+     tempo_scans := 900;
+     if PastaLogs = '\' then
+     Pastalogs := 'C:\ServicoExtracao\logs\';
 
    while (g=0) do begin
-      LogExecucao := tstringlist.Create;
+      if now() > IncMinute(controletempo,tempo_scans) then begin
+       LogExecucao := tstringlist.Create;
        horaAgora:= now();
        if (horaAgora > horaScanDiario) and
           (horaAgora < horaScanDiarioFim)then begin
@@ -428,9 +444,10 @@ begin
           except
           end;
           LogExecucao.Add(formatdatetime('dd-MM-yyyy hh:mm',now) + ' EXECUÇÃO BEM SUCEDIDA');
-          LogExecucao.SaveToFile(Pastalogs + 'LogStarts'+ formatdatetime('dd.MM.yyyy.hhmm',now) +'.txt');
+          LogExecucao.SaveToFile(Pastalogs + 'LogStarts'+ formatdatetime('dd.MM.yyyy.hhmm',now) +'_.txt');
           LogExecucao.Destroy;
-          sleep((tempo_scans*1000));  // 1000=1seg   |  60000 = 1min  |  600000=10min  |  900000=15min
+          sleep(tempo_scans * 1000);
+      end;
      end;
    LogExecucao.Destroy;
 end;
