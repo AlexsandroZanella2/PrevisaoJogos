@@ -6,19 +6,32 @@ uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, FIBDatabase, pFIBDatabase, Data.DB,
   FIBDataSet, pFIBDataSet, Vcl.StdCtrls, Vcl.Buttons, System.Net.HttpClient, System.Net.HttpClientComponent,
-  Vcl.OleCtrls, SHDocVw, ActiveX,iniFiles;
+  Vcl.OleCtrls, SHDocVw, ActiveX,iniFiles, Vcl.ComCtrls;
 
 type
-  TServicoExtracao = class(TForm)
+  TServicoExtracaoInicial = class(TForm)
     BitBtn1           : TBitBtn;
     DataBase: TpFIBDatabase;
     DataSet: TpFIBDataSet;
     Transacao: TpFIBTransaction;
     Button1: TButton;
     DataSource: TDataSource;
-    Memo1             : TMemo;
+    PageControl1: TPageControl;
+    TabSheet1: TTabSheet;
+    TabSheet2: TTabSheet;
+    Memo1: TMemo;
+    Memo2: TMemo;
+    BitBtn2: TBitBtn;
+    TabSheet3: TTabSheet;
+    Memo3: TMemo;
+    Edit1: TEdit;
+    BitBtn3: TBitBtn;
     procedure BitBtn1Click(Sender: TObject);
     procedure FormCreate(Sender: TObject);
+    procedure ExtrairJogosFutebol(AURL: string);
+    procedure BitBtn2Click(Sender: TObject);
+    procedure GeraListalinks;
+    procedure BitBtn3Click(Sender: TObject);
   private
     { Private declarations }
   public
@@ -27,10 +40,10 @@ type
   end;
 
 var
-  ServicoExtracao : TServicoExtracao;
+  ServicoExtracaoInicial : TServicoExtracaoInicial;
   ListaLinks      : TstringList;
   DadosAdicionar  : TStringList;
-  pagina          :string;
+  pagina          :tstringlist;
   retorno         :TstringList;
   posicao         :integer;
   identificador   :string;
@@ -39,7 +52,7 @@ implementation
 
 {$R *.dfm}
 
-procedure GeraListalinks;
+procedure TServicoExtracaoInicial.GeraListalinks;
 var
 a              : tstringlist;
 y,m,d          : integer;
@@ -50,20 +63,20 @@ begin
   ListaLinks.Text :='';
   //Gerar datas no foprmato AAAA-MM-DD
   //Salvar em StringList
-  for y := 2005 to 2020 do begin
+  for y := 2015 to 2020 do begin
     for m := 1 to 12 do begin
         mm:= inttostr(m);
         if length(mm) = 1 then
         mm := '0'+mm;
-      for d := 1 to 30 do begin
-        dd:= inttostr(m);
+      for d := 1 to 31 do begin
+        dd:= inttostr(d);
         if length(dd) = 1 then
         dd := '0'+dd;
         ListaLinks.add('https://www.goal.com/br/resultados/' + inttostr(y)+'-'+mm+'-'+dd) ;
       end;
     end;
   end;
-
+  memo2.lines.text := ListaLinks.Text;
   //a.Destroy;
 end;
 
@@ -81,49 +94,68 @@ begin
   end;
 end;
 
-procedure ExtrairJogos(AURL: string);
+procedure TServicoExtracaoInicial.BitBtn2Click(Sender: TObject);
+begin
+    GeraListalinks;
+end;
+
+procedure TServicoExtracaoInicial.BitBtn3Click(Sender: TObject);
+begin
+memo3.Lines.Text := getURL(edit1.Text);
+end;
+
+procedure TServicoExtracaoInicial.ExtrairJogosFutebol(AURL: string);
 var
-times, ano,mes,dia,hora,scoreTime1,scoreTime2: string;
+time1,time2, ano,mes,dia,hora,scoreTime1,scoreTime2,competicao: string;
 begin
   //extracao
-    identificador:= '<meta itemprop="name" content="';
-    pagina := GetURL(AURL);
+    pagina := tstringlist.create;
+    identificador:= '<span class="match-row__date">';
+    pagina.Text := GetURL(AURL);
+    //pagina.SaveToFile('teste.txt');
+    //memo1.Lines.Text := pagina.Text;
+    while pagina.Text.Contains(identificador) do begin
+        posicao := pos(identificador, pagina.Text)+length(identificador);
+        pagina.Text  := copy(pagina.Text,posicao);
+          dia  := copy(pagina.Text,1,2);
+        pagina.Text := copy(pagina.Text,4);
+          mes  := copy(pagina.Text,1,2);
+        pagina.Text := copy(pagina.Text,4);
+          ano  := copy(pagina.Text,1,4);
+        pagina.Text := copy(pagina.Text,7);
+          hora := copy(pagina.Text,1,5);
+        pagina.text := copy(pagina.text,pos('<b class="match-row__goals">',pagina.text)+length('<b class="match-row__goals">'));
+          scoreTime1:= copy(pagina.text,1,1);
+        pagina.text := copy(pagina.text,pos('<b class="match-row__goals">',pagina.text)+length('<b class="match-row__goals">'));
+          scoreTime2:= copy(pagina.text,1,1);
+        pagina.text := copy(pagina.text,pos('<span class="match-row__team-name">',pagina.text)+length('<span class="match-row__team-name">'));
+          time1 := copy(pagina.text,1,pos('<',pagina.text)-1);
+        pagina.text := copy(pagina.text,pos('<span class="match-row__team-name">',pagina.text)+length('<span class="match-row__team-name">'));
+          time2 := copy(pagina.text,1,pos('<',pagina.text)-1);
+        pagina.text := copy(pagina.text,pos('<span class="competition-name">',pagina.text)+length('<span class="competition-name">'));
+          competicao := copy(pagina.text,1,pos('<',pagina.text)-1);
 
-    while pagina.Contains(identificador) do begin
-        posicao := pos(identificador, pagina)+length(identificador);
-        pagina  := copy(pagina,posicao);
-          times:= copy(pagina,1,pos('"', pagina)-1);
-        pagina := copy(pagina, pos('<meta itemprop="startDate" content="',pagina));
-          ano  := copy(pagina,1,pos('-',pagina)-1);
-        pagina := copy(pagina,6);
-          mes  := copy(pagina,1,2);
-        pagina := copy(pagina,4);
-          dia  := copy(pagina,1,2);
-          hora := copy(pagina,4,8);
-        pagina := copy(pagina,pos('data-bind="scoreHome">',pagina)+length('data-bind="scoreHome">'));
-          scoreTime1 := copy(pagina,1,pos('<',pagina));
-        pagina := copy(pagina,pos('data-bind="scoreAway">',pagina)+length('data-bind="scoreAway">'));
-          scoreTime2 := copy(pagina,1,pos('<',pagina));
-        DadosAdicionar.add(  dia+'.'+mes+'.'+ano+'|'+hora+'|'+scoretime1+'|'+times+'|'+scoretime2   );
+        DadosAdicionar.add(  dia+'.'+mes+'.'+ano+'|'+hora+'|'+scoretime1+'|'+time1+'|'+time2+'|'+scoretime2+'|'+competicao);
     end;
 
 
-
+    pagina.destroy;
 end;
 
-procedure TServicoExtracao.BitBtn1Click(Sender: TObject);
+procedure TServicoExtracaoInicial.BitBtn1Click(Sender: TObject);
 var
 i           :integer;
 begin
     DadosAdicionar := TStringList.Create;
     // memo1.Lines.Text := GetURL('www.goal.com/br/resultados/');
-     for i := 0 to ListaLinks.Count -1 do begin
-          ExtrairJogos(ListaLinks.Strings[i]);
+     for i := 0 to memo2.Lines.Count -1 do begin
+          ExtrairJogosFutebol(memo2.Lines[i]);
+
      end;
-     memo1.Lines.Text := DadosAdicionar.Text;
+         memo1.Lines.Text := DadosAdicionar.Text;
 end;
 
-procedure TServicoExtracao.FormCreate(Sender: TObject);
+procedure TServicoExtracaoInicial.FormCreate(Sender: TObject);
 var
 Config      : TiniFile;
 ipBanco     : string;
@@ -149,7 +181,7 @@ begin
     if config <> nil then
         config.Destroy;
     // dataset.Active :=true;
-    GeraListalinks;
+
 end;
 
 end.

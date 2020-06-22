@@ -1,0 +1,10 @@
+1°> 	Instale Firebird 2.5
+
+2°> 	Abra o arquivo config.ini e altere a propriedade localbanco 
+	para a correspondente da pasta do banco de dados, que é o arquivo DADOS.FDB
+
+3°>	Configure ServiçoExtracao.exe, para inicialização automática ao iniciar o windows (com privilégios Adm)
+
+Assim que eu programar a 2ª etapa(processamento de probabilidades), bastará adicionar o novo executavel a essa mesma pasta 
+que o Servico de Extracao fará a chamada automaticamente a cada 15 minutos ou o tempo que estiver configurado no config.ini
+
