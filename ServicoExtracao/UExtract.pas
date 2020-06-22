@@ -392,6 +392,9 @@ LogExecucao: tstringList;
 g:integer;
 controletempo:ttime;
 teste_scans:string;
+teste_horaD:string;
+teste_horaDF:string;
+teste_TempoAtrasoAttJogos:string;
 begin
 
   g:=0;
@@ -402,18 +405,23 @@ begin
         localBanco          :=  config.ReadString('config','localbanco','');
         teste_scans         :=  config.ReadString('config','tempo_scans','');
         tempo_scans         :=  strtoint(config.ReadString('config','tempo_scans',''));
+        teste_horaD         :=  config.ReadString('config','hora_extracao_diaria','');
         horaScanDiario      :=  strtotime(config.ReadString('config','hora_extracao_diaria',''));
+        teste_horaD         :=  config.ReadString('config','hora_extracao_diaria_fim','');
         horaScanDiarioFim   :=  strtotime(config.ReadString('config','hora_extracao_diaria_fim',''));
+        teste_TempoAtrasoAttJogos:= config.ReadString('config','tempo_atraso_att_jogos','');
         TempoAtrasoAttJogos :=  strtoint(config.ReadString('config','tempo_atraso_att_jogos',''));
         Pastalogs           :=  config.ReadString('config','pasta_logs','');
         Pastalogs           :=  Pastalogs + '\';
         database.DBName     :=  ipBanco + ':' + localBanco;
 
      except
-       // showmessage('Arquivo Config.ini não encontrado!');
+        LogExecucao := tstringlist.Create;
+        LogExecucao.Add('Não foi possível acessar o config.ini.');
+        LogExecucao.Add(' verifique as configurações de acesso do windows');
      end;
-
-
+       LogExecucao.SaveToFile(Pastalogs + 'ERRO_FATAL.'+ formatdatetime('dd.MM.yyyy.hhmmss',now) +'_.txt');
+       LogExecucao.Destroy;
      try
         database.Connected  := true;
         transacao.active    :=true;
@@ -425,6 +433,12 @@ begin
         application.Destroy;
      end;
 
+     if teste_horaD = '' then
+        horaScanDiario := strtotime('08:00:00');
+     if teste_horaDF ='' then
+        horaScanDiarioFim := strtotime('08:15:00');
+     if teste_TempoAtrasoAttJogos = '' then
+        TempoAtrasoAttJogos := -20;
      if teste_scans = '' then
      tempo_scans := 900;
      if PastaLogs = '\' then
