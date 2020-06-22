@@ -3,10 +3,10 @@
         <ProjectGuid>{51CE27F4-648E-466F-BDD7-563133D94960}</ProjectGuid>
     </PropertyGroup>
     <ItemGroup>
-        <Projects Include="ServicoExtracao\ExtracaoInicial.dproj">
+        <Projects Include="ServicoExtracao\ServicoExtracao.dproj">
             <Dependencies/>
         </Projects>
-        <Projects Include="ServicoExtracao\ServicoExtracao.dproj">
+        <Projects Include="ServicoProcessamento\ServicoProcessamento.dproj">
             <Dependencies/>
         </Projects>
     </ItemGroup>
@@ -17,15 +17,6 @@
             <Default.Personality/>
         </BorlandProject>
     </ProjectExtensions>
-    <Target Name="ExtracaoInicial">
-        <MSBuild Projects="ServicoExtracao\ExtracaoInicial.dproj"/>
-    </Target>
-    <Target Name="ExtracaoInicial:Clean">
-        <MSBuild Projects="ServicoExtracao\ExtracaoInicial.dproj" Targets="Clean"/>
-    </Target>
-    <Target Name="ExtracaoInicial:Make">
-        <MSBuild Projects="ServicoExtracao\ExtracaoInicial.dproj" Targets="Make"/>
-    </Target>
     <Target Name="ServicoExtracao">
         <MSBuild Projects="ServicoExtracao\ServicoExtracao.dproj"/>
     </Target>
@@ -35,14 +26,23 @@
     <Target Name="ServicoExtracao:Make">
         <MSBuild Projects="ServicoExtracao\ServicoExtracao.dproj" Targets="Make"/>
     </Target>
+    <Target Name="ServicoProcessamento">
+        <MSBuild Projects="ServicoProcessamento\ServicoProcessamento.dproj"/>
+    </Target>
+    <Target Name="ServicoProcessamento:Clean">
+        <MSBuild Projects="ServicoProcessamento\ServicoProcessamento.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="ServicoProcessamento:Make">
+        <MSBuild Projects="ServicoProcessamento\ServicoProcessamento.dproj" Targets="Make"/>
+    </Target>
     <Target Name="Build">
-        <CallTarget Targets="ExtracaoInicial;ServicoExtracao"/>
+        <CallTarget Targets="ServicoExtracao;ServicoProcessamento"/>
     </Target>
     <Target Name="Clean">
-        <CallTarget Targets="ExtracaoInicial:Clean;ServicoExtracao:Clean"/>
+        <CallTarget Targets="ServicoExtracao:Clean;ServicoProcessamento:Clean"/>
     </Target>
     <Target Name="Make">
-        <CallTarget Targets="ExtracaoInicial:Make;ServicoExtracao:Make"/>
+        <CallTarget Targets="ServicoExtracao:Make;ServicoProcessamento:Make"/>
     </Target>
     <Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
 </Project>
