@@ -395,6 +395,8 @@ teste_scans:string;
 teste_horaD:string;
 teste_horaDF:string;
 teste_TempoAtrasoAttJogos:string;
+ErroIniFile, ErroSetConfigs, ErroConexaoBanco, ErroAtualizarProbabil, ErroCargaD, ErroCargaReal: boolean;
+cargaDexecutado, cargaRealExecutado, chamadoProba:boolean;
 begin
 
   g:=0;
@@ -416,23 +418,26 @@ begin
         database.DBName     :=  ipBanco + ':' + localBanco;
 
      except
+        ErroIniFile := true;
         LogExecucao := tstringlist.Create;
-        LogExecucao.Add('Não foi possível acessar o config.ini.');
-        LogExecucao.Add(' verifique as configurações de acesso do windows');
+
+        LogExecucao.SaveToFile(Pastalogs + 'ERRO_FATAL.'+ formatdatetime('dd.MM.yyyy.hhmmss',now) +'_.txt');
+        LogExecucao.Destroy;
      end;
-       LogExecucao.SaveToFile(Pastalogs + 'ERRO_FATAL.'+ formatdatetime('dd.MM.yyyy.hhmmss',now) +'_.txt');
-       LogExecucao.Destroy;
+
      try
         database.Connected  := true;
         transacao.active    :=true;
      except
+        ErroConexaoBanco := true;
         LogExecucao := tstringlist.Create;
         LogExecucao.Add(formatdatetime('dd-MM-yyyy hh:mm',now) + ' NÃO FOI POSSIVEL CONECTAR AO BANCO');
-      LogExecucao.SaveToFile(Pastalogs + 'LogStarts'+ formatdatetime('dd.MM.yyyy.hhmm',now) +'.txt');
-      LogExecucao.Destroy;
+          LogExecucao.SaveToFile(Pastalogs + 'LogStarts'+ formatdatetime('dd.MM.yyyy.hhmm',now) +'.txt');
+          LogExecucao.Destroy;
         application.Destroy;
      end;
 
+     try
      if teste_horaD = '' then
         horaScanDiario := strtotime('08:00:00');
      if teste_horaDF ='' then
@@ -443,22 +448,66 @@ begin
      tempo_scans := 900;
      if PastaLogs = '\' then
      Pastalogs := 'C:\ServicoExtracao\logs\';
+     except
+       ErroSetConfigs := true;
+     end;
 
    while (g=0) do begin
-      if now() > IncMinute(controletempo,tempo_scans) then begin
+     if now() > IncMinute(controletempo,tempo_scans) then begin
        LogExecucao := tstringlist.Create;
-       horaAgora:= now();
+       horaAgora := strtotime(formatdatetime('hh:mm:ss',now()));
        if (horaAgora > horaScanDiario) and
           (horaAgora < horaScanDiarioFim)then begin
-           CargaTenis;
-       end;
-          CargaTenisRealTime;
           try
-          AtualizaProbabilidades;
+           CargaTenis;
           except
+            ErroCargaD := true;
           end;
-          LogExecucao.Add(formatdatetime('dd-MM-yyyy hh:mm',now) + ' EXECUÇÃO BEM SUCEDIDA');
-          LogExecucao.SaveToFile(Pastalogs + 'LogStarts'+ formatdatetime('dd.MM.yyyy.hhmm',now) +'_.txt');
+          if not ErroCargaD then
+            cargaDexecutado:= true;
+       end;
+          try
+            CargaTenisRealTime;
+          except
+            ErroCargaReal := true;
+          end;
+          if not ErroCargaReal then
+            cargaRealExecutado :=true;
+          try
+            AtualizaProbabilidades;
+          except
+            ErroAtualizarProbabil := TRUE;
+          end;
+             if not ErroAtualizarProbabil then
+                chamadoProba :=true;
+            try
+              if ErroIniFile then begin
+                  LogExecucao.Add('Não foi possível acessar o config.ini.');
+                  LogExecucao.Add(' verifique as configurações de acesso do windows');
+                  LogExecucao.Add('');
+                  LogExecucao.Add('___________________________________________________________________________');
+                  LogExecucao.Add('');
+              end;
+              if ErroConexaoBanco then begin
+                  LogExecucao.Add(' NÃO FOI POSSIVEL CONECTAR AO BANCO');
+                  LogExecucao.Add(' Verifique se o servico Firebird está correto e se o banco de dados existe!');
+                  LogExecucao.Add('');
+                  LogExecucao.Add('___________________________________________________________________________');
+                  LogExecucao.Add('');
+              end;
+              if ErroSetConfigs then begin
+                  LogExecucao.Add('ERROFATAL: pare o processo imediatamente e inicie novamente');
+                  LogExecucao.Add('Se está vendo essa mensagem, provavelmente seu servidor está com danos físicos,');
+                  LogExecucao.Add('como processador com pasta termica seca ou caiu um raio nele...');
+                  LogExecucao.Add('');
+                  LogExecucao.Add('___________________________________________________________________________');
+                  LogExecucao.Add('');
+
+              end;
+
+            finally
+            end;
+
           LogExecucao.Destroy;
           sleep(tempo_scans * 1000);
       end;
