@@ -14,6 +14,7 @@ type
     transacao: TpFIBTransaction;
     query: TpFIBQuery;
     dataset: TpFIBDataSet;
+    transSelect: TpFIBTransaction;
     datasetCODIGO: TFIBIntegerField;
     datasetDATA_JOGO: TFIBDateTimeField;
     datasetJOGADOR1: TFIBStringField;
@@ -35,7 +36,6 @@ type
     datasetSET_4_: TFIBIntegerField;
     datasetSET_5: TFIBIntegerField;
     datasetSET_5_: TFIBIntegerField;
-    transSelect: TpFIBTransaction;
     procedure CargaTenis;
     procedure CargaTenisRealTime;
     procedure AtualizaProbabilidades;
@@ -64,6 +64,9 @@ var
   tempo_scans     :integer      ;
   horascandiario  :ttime        ;
   horaScanDiarioFim:ttime     ;
+  LogExecucao: tstringList;
+  LogerificaErro, cargaDexecutado, cargaRealExecutado:boolean;
+  ErroIniFile, ErroSetConfigs, ErroConexaoBanco, ErroAtualizarProbabil, ErroCargaD, ErroCargaReal: boolean;
 
 implementation
 
@@ -122,16 +125,10 @@ i,g,h:integer;
 dataJogos:tdate;
 j: tdatetime;
 teste : string;
-LogErros:tstringList;
-set1,set2,set3,set4,set5,set1_,set2_,set3_,set4_,set5_, registrosAtualizar:integer;
+set1,set2,set3,set4,set5,set6,set7,set1_,set2_,set3_,set4_,set5_,set6_,set7_, registrosAtualizar:integer;
 begin
   //extracao
-    LogErros := tstringlist.Create;
-    dadosAdicionar := tstringlist.create;
-    //dataJogos := IncDay(now, 1);
-    //i:=0;
     pagina := tstringlist.create;
-    //identificador:= '<div class="detail"><b>';
     dataset.Close;
     dataset.SelectSQL.Text := 'select * from JOGOS_TENISMESA where DATA_JOGO <= ' +
                               char(39) + formatdatetime('dd.MM.yyyy',now)+' '+
@@ -144,13 +141,13 @@ begin
             pagina.text := getURL('https://m.flashscore.com.br/jogo/'+dataset.FieldValue('link',false));
             if pagina.text.contains('<div class="detail">Encerrado') then begin
             try
+               try
                pagina.text    := copy(pagina.text,pos('class="detail"><b>',pagina.text)+length('class="detail"><b>'));
                   scoreTime1  := copy(pagina.text, 1,pos(':',pagina.text)-1);
                pagina.text    := copy(pagina.text, pos(':',pagina.text)+1);
                   scoreTime2  := copy(pagina.text, 1,pos('<',pagina.text)-1);
                pagina.text    := copy(pagina.text,pos('</b>  (',pagina.text)+length('</b>  ('));
                pagina.text    := copy(pagina.text,1,pos(')',pagina.text));
-              // pagina.text    := copy(pagina.text,1,length(pagina.text)-2);
                   set1     := strtoint(copy(pagina.text,1,pos(':',pagina.text)-1));
                pagina.text := copy(pagina.text,pos(':',pagina.text)+1);
                   set1_    := strtoint(copy(pagina.text,1,pos(',',pagina.text)-1));
@@ -163,7 +160,13 @@ begin
                pagina.text := copy(pagina.text,pos(':',pagina.text)+1);
               if (strtoint(scoreTime1) + strtoint(scoreTime2)) = 3 then
                   set3_    := strtoint(copy(pagina.text,1,pos(')',pagina.text)-1));
-
+               except
+                 LogExecucao.Add('Falha no setor 1 de CargaTenisRealTime');
+                 LogerificaErro :=true;
+                 LogExecucao.Add('');
+                 ErroCargaReal := TRUE;
+               end;
+             try
               if (strtoint(scoreTime1) + strtoint(scoreTime2)) > 3 then begin
                   set3_    := strtoint(copy(pagina.text,1,pos(',',pagina.text)-1));
                pagina.text := copy(pagina.text,pos(',',pagina.text)+1);
@@ -178,18 +181,76 @@ begin
                   set4  := 0;
                   set4_ := 0;
               end;
+             except
+                 LogExecucao.Add('Falha no setor 2 de CargaTenisRealTime');
+                 LogExecucao.Add('');
+                 LogerificaErro := true;
+                 ErroCargaReal := TRUE;
+             end;
 
+             try
               if (strtoint(scoreTime1) + strtoint(scoreTime2)) > 4 then begin
                pagina.text := copy(pagina.text,pos(',',pagina.text)+1);
                   set5     := strtoint(copy(pagina.text,1,pos(':',pagina.text)-1));
                pagina.text := copy(pagina.text,pos(':',pagina.text)+1);
-                  set5_    := strtoint(copy(pagina.text,1,pos(')',pagina.text)-1));
+                  if (strtoint(scoreTime1) + strtoint(scoreTime2)) = 5 then begin
+                    set5_    := strtoint(copy(pagina.text,1,pos(')',pagina.text)-1));
+                  end else begin
+                    set5_    := strtoint(copy(pagina.text,1,pos(',',pagina.text)-1));
+                  end;
               end else begin
                   set5     := 0;
                   set5_    := 0;
               end;
+             except
+                 LogExecucao.Add('Falha no setor 3 de CargaTenisRealTime');
+                 LogExecucao.Add('');
+                 LogerificaErro := true;
+                 ErroCargaReal := TRUE;
+             end;
+
+             try
+              if (strtoint(scoreTime1) + strtoint(scoreTime2)) > 5 then begin
+                pagina.text := copy(pagina.text,pos(',',pagina.text)+1);
+                  set6     := strtoint(copy(pagina.text,1,pos(':',pagina.text)-1));
+               pagina.text := copy(pagina.text,pos(':',pagina.text)+1);
+                  if (strtoint(scoreTime1) + strtoint(scoreTime2)) = 6 then begin
+                    set6_    := strtoint(copy(pagina.text,1,pos(')',pagina.text)-1));
+                  end else begin
+                    set6_    := strtoint(copy(pagina.text,1,pos(',',pagina.text)-1));
+                  end;
+              end;
+             except
+                LogExecucao.Add('Falha no setor 4 de CargaTenisRealTime');
+                LogExecucao.Add('');
+                LogerificaErro := true;
+                ErroCargaReal := TRUE;
+             end;
+
+             try
+              if (strtoint(scoreTime1) + strtoint(scoreTime2)) > 6 then begin
+                pagina.text := copy(pagina.text,pos(',',pagina.text)+1);
+                  set7     := strtoint(copy(pagina.text,1,pos(':',pagina.text)-1));
+               pagina.text := copy(pagina.text,pos(':',pagina.text)+1);
+                  if (strtoint(scoreTime1) + strtoint(scoreTime2)) = 7 then begin
+                    set7_    := strtoint(copy(pagina.text,1,pos(')',pagina.text)-1));
+                  end else begin
+                    set7_    := strtoint(copy(pagina.text,1,pos(',',pagina.text)-1));
+                  end;
+              end;
+             except
+                 LogExecucao.Add('Falha no setor 5 de CargaTenisRealTime');
+                 LogExecucao.Add('');
+                 LogerificaErro := true;
+                 ErroCargaReal := TRUE;
+             end;
+
+
+               cargaRealExecutado := true;
             except
-               logErros.add(datetimetostr(now) + ' : Não foi possível atualizar o registro código ' +dataset.FieldByName('codigo').AsString + '!');
+               LogExecucao.add(datetimetostr(now) + ' : Não foi possível processar o registro código ' +dataset.FieldByName('codigo').AsString + '!');
+               LogerificaErro := true;
+               ErroCargaReal := TRUE;
             end;
 
                 try
@@ -208,8 +269,12 @@ begin
                                 'SET_4  = ' + inttostr(set4 )+ ' , ' +
                                 'SET_4_ = ' + inttostr(set4_)+ ' , ' +
                                 'SET_5  = ' + inttostr(set5 )+ ' , ' +
-                                'SET_5_ = ' + inttostr(set5_)+' '    +
-                                'where codigo = ' + (dataset.FieldByName('codigo').AsString)
+                                'SET_5_ = ' + inttostr(set5_)+ ' , '    +
+                                'SET_6  = ' + inttostr(set5 )+ ' , ' +
+                                'SET_6_ = ' + inttostr(set5_)+ ' , '    +
+                                'SET_7  = ' + inttostr(set5 )+ ' , ' +
+                                'SET_7_ = ' + inttostr(set5_)+ ' '    +
+                                'where codigo = ' + inttostr(dataset.FieldByName('codigo').Asinteger)
                                 ;
 
                   if transacao.active = false or database.Connected = false then begin
@@ -217,10 +282,12 @@ begin
                       transacao.active := true
                   end;
                     query.ExecQuery;
-                    DadosAdicionar.Add('SUCESSO: Atualizado Registro número: '+ (dataset.FieldByName('codigo').AsString))
+                    LogExecucao.Add('SUCESSO: Atualizado Registro número: '+ (inttostr(dataset.FieldByName('codigo').AsInteger)));
+                  cargaRealExecutado := true;
                 except
-                    logErros.add(datetimetostr(now) + ' : Não foi possível atualizar o registro código ' +dataset.FieldByName('codigo').AsString + '!');
-
+                    LogExecucao.add(datetimetostr(now) + ' : Não foi possível atualizar o registro código ' +dataset.FieldByName('codigo').AsString + '!');
+                    LogerificaErro := true;
+                    ErroCargaReal := TRUE;
                 end;
 
             end else if pagina.text.contains('class="detail">Cancelado') then begin
@@ -240,43 +307,33 @@ begin
                                 'SET_4  = 0 , ' +
                                 'SET_4_ = 0 , ' +
                                 'SET_5  = 0 , ' +
-                                'SET_5_ = 0 '        +
-                                'where codigo = ' + (dataset.FieldByName('codigo').AsString)
+                                'SET_5_ = 0 , ' +
+                                'SET_6  = 0 , ' +
+                                'SET_6_ = 0 , ' +
+                                'SET_7  = 0 , ' +
+                                'SET_7_ = 0 '   +
+                                'where codigo = ' + inttostr(dataset.FieldByName('codigo').Asinteger)
                                 ;
                     if transacao.active = false or database.Connected = false then begin
                       database.Connected := true;
                       transacao.active := true
                   end;
                   query.ExecQuery;
-                  DadosAdicionar.Add('SUCESSO: Atualizado Registro número: '+ (dataset.FieldByName('codigo').AsString))
+                  LogExecucao.Add('SUCESSO: Atualizado Registro número: '+ (dataset.FieldByName('codigo').AsString));
+                  cargaRealExecutado := true;
                  except
-                      logErros.add(datetimetostr(now) + ' : Não foi possível atualizar o registro código ' +dataset.FieldByName('codigo').AsString + '!');
+                      LogExecucao.add(datetimetostr(now) + ' : Não foi possível atualizar o registro código ' +dataset.FieldByName('codigo').AsString + '!');
+                      LogerificaErro := true;
+                      ErroCargaReal := TRUE;
                  end;
             end;
             dataset.next;
-           // dataset.CloseOpen(false);
-    end;
-
-  if LogErros.Text <> '' then begin
-    try
-      LogErros.SaveToFile(Pastalogs+'LogErros'+ formatdatetime('dd.MM.yyy.hhmm',now) +'.txt');
-    except
-      LogErros.Add('ERRO LOCAL:Não foi possível salvar na pasta informada: '+ Pastalogs);
-      LogErros.SaveToFile(Pastalogs+'LogErros'+ formatdatetime('dd.MM.yyy.hhmm',now) +'.txt');
-    end;
-  end;
-
-    if DadosAdicionar.Text <> '' then begin
-        try
-          DadosAdicionar.SaveToFile(Pastalogs + 'LogGeral' + formatdatetime('dd.MM.yyy.hhmm',now) +'.txt');
-        except
-          DadosAdicionar.Add('ERRO LOCAL:Não foi possível salvar na pasta informada: '+ Pastalogs);
-          DadosAdicionar.SaveToFile( 'LogGeral' + formatdatetime('dd.MM.yyy.hhmm',now) +'.txt');
-        end;
     end;
 
     pagina.destroy;
-    DadosAdicionar.Destroy;
+    if ErroCargaReal = false then
+    cargaRealExecutado := true;
+
 end;
 
 //extracao DIARIA
@@ -287,11 +344,13 @@ i,g:integer;
 dataJogos:tdate;
 j: tdatetime;
 teste : string;
-LogErros:tstringList;
 begin
-
-    LogErros := tstringlist.Create;
-    dadosAdicionar := tstringlist.create;
+    dataset.Close;
+    dataset.SelectSQL.Text := 'select * from JOGOS_TENISMESA where DATA_JOGO > ' +
+                              char(39) + formatdatetime('dd.MM.yyyy',IncDay(now,1))+' 00:00 ' + char(39);
+    dataset.open;
+     if (DataSet.Eof) then begin
+     dataset.close;
     dataJogos := IncDay(now, 1);
     i:=0;
     pagina := tstringlist.create;
@@ -328,8 +387,8 @@ begin
         end;
 
        try
-          query.SQL.Text := 'insert into JOGOS_TENISMESA '              +
-                            'values(GEN_ID(gen_jogos_tenismesa_id,1), '                   +
+          query.SQL.Text := 'insert into JOGOS_TENISMESA '                                +
+                            'values(GEN_ID(gen_jogos_tenismesa_id,1)'               +', ' +
                             char(39) + hora + char(39)                              +', ' +
                             char(39) + time1      + char(39)                        +', ' +
                             char(39) + time2      + char(39)                        +', ' +
@@ -340,37 +399,34 @@ begin
                             char(39) + 'P'  + char(39)                              +', ' +
                             '-1'                                                    +', ' +
                             '-1'                                                    +', ' +
-                            '-1,-1,-1,-1,-1,-1,-1,-1,-1,-1' + ')';
+                            '-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1' + ')';
 
           if transacao.active = false or database.Connected = false then begin
               database.Connected := true;
               transacao.active := true
           end;
           query.ExecQuery;
-          DadosAdicionar.Add('Registro Diário Atualizado.');
+          cargaDexecutado := true;
        except
-          LogErros.Add(datetimetostr(now()) + ': ' + 'Não foi possível atualizar o banco de dados');
+          LogExecucao.Add(datetimetostr(now()) + ': ' + 'Não foi possível atualizar o banco de dados');
+          LogerificaErro := true;
+          ErroCargaD := true;
        end;
 
 
-
     end;
-    if DadosAdicionar.Text <> '' then
-    try
-      DadosAdicionar.SaveToFile(Pastalogs + 'DadosCarga' + formatdatetime('dd.MM.yyy.hhmm',now) +'.txt');
-    except
-      DadosAdicionar.Add('ERRO LOCAL:Não foi possível salvar na pasta informada: '+ Pastalogs);
-      DadosAdicionar.SaveToFile('DadosCarga' + formatdatetime('dd.MM.yyy.hhmm',now) +'.txt');
-    end;
-    if LogErros.Text <> '' then
-    try
-      LogErros.SaveToFile(Pastalogs+'LogErrosCarga'+ formatdatetime('dd.MM.yyy.hhmm',now) +'.txt');
-    except
-      LogErros.add('ERRO LOCAL:Não foi possível salvar na pasta informada: '+ Pastalogs);
-      LogErros.SaveToFile(Pastalogs+'LogErrosCarga'+ formatdatetime('dd.MM.yyy.hhmm',now) +'.txt');
-    end;
+    if LogerificaErro then
+       LogExecucao.Add('Fim do Log de Carga diária');
+       LogExecucao.Add('');
+       LogExecucao.Add('__________________________________________________________________________________');
+       LogExecucao.Add('');
     pagina.destroy;
     DadosAdicionar.Destroy;
+    if ErroCargaD = false then
+      cargaDexecutado := true;
+  end;
+
+
 end;
 
 procedure ServiceController(CtrlCode: DWord); stdcall;
@@ -388,15 +444,14 @@ var
 Config      : TiniFile;
 ipBanco     : string;
 localBanco  : string;
-LogExecucao: tstringList;
 g:integer;
 controletempo:ttime;
 teste_scans:string;
 teste_horaD:string;
 teste_horaDF:string;
 teste_TempoAtrasoAttJogos:string;
-ErroIniFile, ErroSetConfigs, ErroConexaoBanco, ErroAtualizarProbabil, ErroCargaD, ErroCargaReal: boolean;
-cargaDexecutado, cargaRealExecutado, chamadoProba:boolean;
+ chamadoProba:boolean;
+nomeLog: string;
 begin
 
   g:=0;
@@ -416,13 +471,8 @@ begin
         Pastalogs           :=  config.ReadString('config','pasta_logs','');
         Pastalogs           :=  Pastalogs + '\';
         database.DBName     :=  ipBanco + ':' + localBanco;
-
      except
         ErroIniFile := true;
-        LogExecucao := tstringlist.Create;
-
-        LogExecucao.SaveToFile(Pastalogs + 'ERRO_FATAL.'+ formatdatetime('dd.MM.yyyy.hhmmss',now) +'_.txt');
-        LogExecucao.Destroy;
      end;
 
      try
@@ -430,14 +480,13 @@ begin
         transacao.active    :=true;
      except
         ErroConexaoBanco := true;
-        LogExecucao := tstringlist.Create;
-        LogExecucao.Add(formatdatetime('dd-MM-yyyy hh:mm',now) + ' NÃO FOI POSSIVEL CONECTAR AO BANCO');
-          LogExecucao.SaveToFile(Pastalogs + 'LogStarts'+ formatdatetime('dd.MM.yyyy.hhmm',now) +'.txt');
-          LogExecucao.Destroy;
-        application.Destroy;
      end;
 
      try
+     if ipBanco = '' then
+        ipBanco := 'localhost';
+     if localBanco = '' then
+        localBanco := 'C:\ServicoExtracao\DADOS.FDB';
      if teste_horaD = '' then
         horaScanDiario := strtotime('08:00:00');
      if teste_horaDF ='' then
@@ -446,32 +495,28 @@ begin
         TempoAtrasoAttJogos := -20;
      if teste_scans = '' then
      tempo_scans := 900;
-     if PastaLogs = '\' then
+     if (PastaLogs = '\') or (PastaLogs = '') then
      Pastalogs := 'C:\ServicoExtracao\logs\';
      except
        ErroSetConfigs := true;
      end;
 
    while (g=0) do begin
-     if now() > IncMinute(controletempo,tempo_scans) then begin
        LogExecucao := tstringlist.Create;
-       horaAgora := strtotime(formatdatetime('hh:mm:ss',now()));
-       if (horaAgora > horaScanDiario) and
-          (horaAgora < horaScanDiarioFim)then begin
+
           try
            CargaTenis;
           except
             ErroCargaD := true;
           end;
-          if not ErroCargaD then
+          if (not ErroCargaD) and cargaDexecutado then
             cargaDexecutado:= true;
-       end;
           try
             CargaTenisRealTime;
           except
             ErroCargaReal := true;
           end;
-          if not ErroCargaReal then
+          if (not ErroCargaReal) and cargaRealExecutado then
             cargaRealExecutado :=true;
           try
             AtualizaProbabilidades;
@@ -481,12 +526,40 @@ begin
              if not ErroAtualizarProbabil then
                 chamadoProba :=true;
             try
+              if LogerificaErro     or
+             ErroIniFile        or
+             ErroConexaoBanco   or
+             ErroSetConfigs     or
+             ErroCargaD         or
+             ErroCargaReal      or
+             ErroAtualizarProbabil
+             then begin
+               nomeLog := 'LogErros';
+               LogerificaErro := false;
+             end else begin
+               nomeLog := 'Log';
+             end;
+              if ErroIniFile or ErroConexaoBanco or ErroSetConfigs or ErroCargaD or ErroCargaReal or ErroAtualizarProbabil then begin
+                  LogExecucao.Add('Dados da execução              ');
+                  LogExecucao.Add('Data                           : ' + formatdatetime('dd/MM/yyyy',now));
+                  LogExecucao.Add('Hora                           : ' + formatdatetime('hh:mm:ss',now));
+                  LogExecucao.Add('Arquivo de configuração        : ' + ExtractFilePath(Application.ExeName) + 'config.ini');
+                  LogExecucao.Add('Endereço do Banco de dados     : ' +ipBanco);
+                  LogExecucao.Add('Local do banco de Dados        : ' +localBanco);
+                  LogExecucao.Add('Tempo entre cada scan(segundos): ' +inttostr(tempo_scans));
+                  LogExecucao.Add('Tempo de atraso att dos jogos  : ' +inttostr(TempoAtrasoAttJogos));
+                  LogExecucao.Add('Pasta dos Logs                 : ' +Pastalogs);
+                  LogExecucao.Add('');
+                  LogExecucao.Add('___________________________________________________________________________');
+                  LogExecucao.Add('');
+              end;
               if ErroIniFile then begin
                   LogExecucao.Add('Não foi possível acessar o config.ini.');
                   LogExecucao.Add(' verifique as configurações de acesso do windows');
                   LogExecucao.Add('');
                   LogExecucao.Add('___________________________________________________________________________');
                   LogExecucao.Add('');
+                  ErroIniFile := false;
               end;
               if ErroConexaoBanco then begin
                   LogExecucao.Add(' NÃO FOI POSSIVEL CONECTAR AO BANCO');
@@ -494,6 +567,7 @@ begin
                   LogExecucao.Add('');
                   LogExecucao.Add('___________________________________________________________________________');
                   LogExecucao.Add('');
+                  ErroConexaoBanco := false;
               end;
               if ErroSetConfigs then begin
                   LogExecucao.Add('ERROFATAL: pare o processo imediatamente e inicie novamente');
@@ -502,16 +576,60 @@ begin
                   LogExecucao.Add('');
                   LogExecucao.Add('___________________________________________________________________________');
                   LogExecucao.Add('');
-
+                  ErroSetConfigs := false;
               end;
-
+              if ErroCargaD then begin
+                  LogExecucao.Add(' ERRO NA CARGA DIÁRIA');
+                  LogExecucao.Add('Houve algum problema ao efetuar a carga diária dos jogos futuros');
+                  LogExecucao.Add('');
+                  LogExecucao.Add('___________________________________________________________________________');
+                  LogExecucao.Add('');
+                  ErroCargaD := false;
+              end;
+              if ErroCargaReal then begin
+                  LogExecucao.Add(' ERRO NA CARGA EM TEMPO REAL');
+                  LogExecucao.Add('Houve algum problema ao efetuar a carga diária dos jogos encerrados recentemente');
+                  LogExecucao.Add('');
+                  LogExecucao.Add('___________________________________________________________________________');
+                  LogExecucao.Add('');
+                  ErroCargaReal := false;
+              end;
+              if ErroAtualizarProbabil then begin
+                  LogExecucao.Add(' ERRO NA CHAMADA DE EXECUÇÃO DO SERVIÇO DE CALCULOS');
+                  LogExecucao.Add('Não foi possível executar o processo de cálculos,');
+                  LogExecucao.Add('Verifique a situação de seu Sistema, isso é um problema no seu servidor');
+                  LogExecucao.Add('');
+                  LogExecucao.Add('___________________________________________________________________________');
+                  LogExecucao.Add('');
+                  ErroAtualizarProbabil := false;
+              end;
+              if (not ErroCargaD) and ( not cargaDExecutado) then begin
+                  LogExecucao.Add('SUCESSO: os jogos de amanhã já estão atualizados.');
+                  LogExecucao.Add('');
+              end;
+              if cargaDexecutado then begin
+                  LogExecucao.Add('SUCESSO: Carga em tempo real de jogos futuros realizada com 100% de sucesso.');
+                  LogExecucao.Add('');
+                  cargaDexecutado := false;
+              end;
+              if cargaRealExecutado then begin
+                  LogExecucao.Add('SUCESSO: Carga em tempo real de jogos encerrados realizada com 100% de sucesso.');
+                  LogExecucao.Add('');
+                  cargaRealExecutado := false;
+              end;
+              if chamadoProba then begin
+                  LogExecucao.Add('CHAMADA: Iniciado Serviço de calculos de Probalilidades.');
+                  LogExecucao.Add('');
+                  chamadoProba := false;
+              end;
             finally
             end;
+              LogExecucao.SaveToFile(Pastalogs + nomeLog + formatdatetime('dd.mm.yyyy.hhmm.ss',now) + '.txt');
 
           LogExecucao.Destroy;
           sleep(tempo_scans * 1000);
       end;
-     end;
+
    LogExecucao.Destroy;
 end;
 

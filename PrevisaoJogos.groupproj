@@ -9,6 +9,9 @@
         <Projects Include="ServicoProcessamento\ServicoProcessamento.dproj">
             <Dependencies/>
         </Projects>
+        <Projects Include="Painel\PainelControle.dproj">
+            <Dependencies/>
+        </Projects>
     </ItemGroup>
     <ProjectExtensions>
         <Borland.Personality>Default.Personality.12</Borland.Personality>
@@ -35,14 +38,23 @@
     <Target Name="ServicoProcessamento:Make">
         <MSBuild Projects="ServicoProcessamento\ServicoProcessamento.dproj" Targets="Make"/>
     </Target>
+    <Target Name="PainelControle">
+        <MSBuild Projects="Painel\PainelControle.dproj"/>
+    </Target>
+    <Target Name="PainelControle:Clean">
+        <MSBuild Projects="Painel\PainelControle.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="PainelControle:Make">
+        <MSBuild Projects="Painel\PainelControle.dproj" Targets="Make"/>
+    </Target>
     <Target Name="Build">
-        <CallTarget Targets="ServicoExtracao;ServicoProcessamento"/>
+        <CallTarget Targets="ServicoExtracao;ServicoProcessamento;PainelControle"/>
     </Target>
     <Target Name="Clean">
-        <CallTarget Targets="ServicoExtracao:Clean;ServicoProcessamento:Clean"/>
+        <CallTarget Targets="ServicoExtracao:Clean;ServicoProcessamento:Clean;PainelControle:Clean"/>
     </Target>
     <Target Name="Make">
-        <CallTarget Targets="ServicoExtracao:Make;ServicoProcessamento:Make"/>
+        <CallTarget Targets="ServicoExtracao:Make;ServicoProcessamento:Make;PainelControle:Make"/>
     </Target>
     <Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
 </Project>

@@ -35,6 +35,29 @@ type
     datasetSET_5: TFIBIntegerField;
     datasetSET_5_: TFIBIntegerField;
     transSelect: TpFIBTransaction;
+    Aux: TpFIBDataSet;
+    FIBIntegerField1: TFIBIntegerField;
+    FIBDateTimeField1: TFIBDateTimeField;
+    FIBStringField1: TFIBStringField;
+    FIBStringField2: TFIBStringField;
+    FIBIntegerField2: TFIBIntegerField;
+    FIBIntegerField3: TFIBIntegerField;
+    FIBStringField3: TFIBStringField;
+    FIBStringField4: TFIBStringField;
+    FIBStringField5: TFIBStringField;
+    FIBIntegerField4: TFIBIntegerField;
+    FIBIntegerField5: TFIBIntegerField;
+    FIBIntegerField6: TFIBIntegerField;
+    FIBIntegerField7: TFIBIntegerField;
+    FIBIntegerField8: TFIBIntegerField;
+    FIBIntegerField9: TFIBIntegerField;
+    FIBIntegerField10: TFIBIntegerField;
+    FIBIntegerField11: TFIBIntegerField;
+    FIBIntegerField12: TFIBIntegerField;
+    FIBIntegerField13: TFIBIntegerField;
+    FIBIntegerField14: TFIBIntegerField;
+    FIBIntegerField15: TFIBIntegerField;
+    transAux: TpFIBTransaction;
     procedure ServiceCreate(Sender: TObject);
     procedure AtualizaProbabilidades;
   private
@@ -47,6 +70,7 @@ type
 var
   Service13: TService13;
   Pastalogs:  string;
+  LogExecucao: tstringList;
 
 implementation
 
@@ -75,7 +99,7 @@ var
 jogador1, jogador2:string;
 Prob1,Prob2,j:integer;
 LogErros,dadosAdicionar: tstringList;
-set1,set2,set3,set4,set5,set1_,set2_,set3_,set4_,set5_ :integer;
+set1,set2,set3,set4,set5,set6,set7,set1_,set2_,set3_,set4_,set5_,set6_,set7_ :integer;
 rodadasJ1, RodadasJ2, pontosJ1, PontosJ2:integer;
 totCalc:integer;
 begin
@@ -99,55 +123,55 @@ begin
              jogador1 := dataset.FieldByName('JOGADOR1').AsString;
              jogador2 := dataset.FieldByName('JOGADOR2').AsString;
                 try
-                  query.Close;
-                  query.SQL.Text := 'select sum(resultado1) rodadasJ1, sum(set_1 + set_2 + set_3 + set_4 + set_5 ) pontosJ1 '+
+                  Aux.Close;
+                  Aux.SelectSQL.Text := 'select sum(resultado1) rodadasJ1, sum(set_1 + set_2 + set_3 + set_4 + set_5 + set_6 + set_7 ) pontosJ1 '+
                                             'from jogos_tenismesa '+
                                             'where jogos_tenismesa.tipo = '+ char(39) + 'E' + char(39) +
                                             'and resultado1 >= 0 '+
                                             'and jogador1 = ' + char(39) + jogador1 + char(39); ;
-                  query.Open;
-                  if not query.Eof then begin
-                    rodadasJ1 := query.FieldByName('rodadasJ1').AsInteger;
-                    pontosJ1  := query.FieldByName('pontosJ1').AsInteger;
+                  Aux.Open;
+                  if not Aux.Eof then begin
+                    rodadasJ1 := Aux.FieldByName('rodadasJ1').AsInteger;
+                    pontosJ1  := Aux.FieldByName('pontosJ1').AsInteger;
                   end;
 
-                  query.Close;
-                  query.SQL.Text := 'select sum(resultado2) rodadasJ1, sum(set_1_ + set_2_ + set_3_ + set_4_ + set_5_ ) pontosJ1 '+
+                  Aux.Close;
+                  Aux.selectSQL.Text := 'select sum(resultado2) rodadasJ1, sum(set_1_ + set_2_ + set_3_ + set_4_ + set_5_ + set_6_ + set_7_ ) pontosJ1 '+
                                             'from jogos_tenismesa '+
                                             'where jogos_tenismesa.tipo = '+ char(39) + 'E' + char(39) +
                                             'and resultado2 >= 0 '+
                                             'and jogador2 = ' + char(39) + jogador1 + char(39); ;
 
-                   query.Open;
-                  if not query.Eof then begin
-                    rodadasJ1 := rodadasJ1 + query.FieldByName('rodadasJ1').AsInteger;
-                    pontosJ1  := pontosJ1 + query.FieldByName('pontosJ1').AsInteger;
+                   Aux.Open;
+                  if not Aux.Eof then begin
+                    rodadasJ1 := rodadasJ1 + Aux.FieldByName('rodadasJ1').AsInteger;
+                    pontosJ1  := pontosJ1 + Aux.FieldByName('pontosJ1').AsInteger;
                   end;
 
-                   query.Close;
-                  query.SQL.Text := 'select sum(resultado1) rodadasJ2, sum(set_1 + set_2 + set_3 + set_4 + set_5 ) pontosJ2 '+
+                   Aux.Close;
+                  Aux.SelectSQL.Text := 'select sum(resultado1) rodadasJ2, sum(set_1 + set_2 + set_3 + set_4 + set_5 + set_6 + set_7) pontosJ2 '+
                                             'from jogos_tenismesa '+
                                             'where jogos_tenismesa.tipo = '+ char(39) + 'E' + char(39) +
                                             'and resultado1 >= 0 '+
                                             'and jogador1 = ' + char(39) + jogador2 + char(39); ;
-                  query.Open;
-                  if not query.Eof then begin
-                    rodadasJ2 := query.FieldByName('rodadasJ2').AsInteger;
-                    pontosJ2  := query.FieldByName('pontosJ2').AsInteger;
+                  Aux.Open;
+                  if not Aux.Eof then begin
+                    rodadasJ2 := Aux.FieldByName('rodadasJ2').AsInteger;
+                    pontosJ2  := Aux.FieldByName('pontosJ2').AsInteger;
                   end;
 
-                   query.Close;
-                  query.SQL.Text := 'select sum(resultado2) rodadasJ2, sum(set_1_ + set_2_ + set_3_ + set_4_ + set_5_ ) pontosJ2 '+
+                   Aux.Close;
+                  Aux.SelectSQL.Text := 'select sum(resultado2) rodadasJ2, sum(set_1_ + set_2_ + set_3_ + set_4_ + set_5_ + set_6_ + set_7_ ) pontosJ2 '+
                                             'from jogos_tenismesa '+
                                             'where jogos_tenismesa.tipo = '+ char(39) + 'E' + char(39) +
                                             'and resultado2 >= 0 '+
                                             'and jogador2 = ' + char(39) + jogador2 + char(39); ;
-                  query.Open;
-                  if not query.Eof then begin
-                    rodadasJ2 := rodadasJ2 + query.FieldByName('rodadasJ2').AsInteger;
-                    pontosJ2  := pontosJ2 + query.FieldByName('pontosJ2').AsInteger;
+                  Aux.Open;
+                  if not Aux.Eof then begin
+                    rodadasJ2 := rodadasJ2 + Aux.FieldByName('rodadasJ2').AsInteger;
+                    pontosJ2  := pontosJ2 + Aux.FieldByName('pontosJ2').AsInteger;
                   end;
-                   query.Close;
+                   Aux.Close;
 
                    if (RodadasJ1 = 0) or (RodadasJ2 = 0) then begin
                       RodadasJ1 := 50;
@@ -162,21 +186,22 @@ begin
                    prob2 := 100 - prob1;
 
                    query.SQL.Text := 'update jogos_tenismesa '      +
-                                     'set Prob1 = ' + prob1 + ' , ' +
-                                     'prob2 = '     + Prob2         +
+                                     'set Prob1 = ' + inttostr(prob1) + ' , ' +
+                                     'prob2 = '     + inttostr(Prob2)         +
                                      'where tipo = ' + char(39)+ 'P' +char(39) +
-                                     'and codigo = ' + dataset.FieldByName('codigo').AsInteger;
+                                     'and codigo = ' + dataset.FieldByName('codigo').AsString;
                    query.ExecQuery;
-
+                   if transacao.active = false or database.Connected = false then begin
+                      database.Connected := true;
+                      transacao.active := true
+                  end;
 
                 except
-                  LogErros.add(datetimetostr(now) + ' : Não foi possível atualizar o registro código ' +dataset.FieldByName('codigo').AsString + '!');;
-                  LogErros.add('SQL: ' + query.SQL.Text);
+                  LogExecucao.add(datetimetostr(now) + ' : Não foi possível atualizar o registro código ' +dataset.FieldByName('codigo').AsString + '!');;
+                  LogExecucao.add('SQL: ' + query.SQL.Text);
                 end;
 
     end;
-    LogErros.SaveToFile(Pastalogs + 'LogErroCalculo'+ formatdatetime('dd.MM.yyyy.hhmm',now) +'.txt');
-    LogErros.Destroy;
 end;
 
 procedure ServiceController(CtrlCode: DWord); stdcall;
@@ -194,7 +219,6 @@ var
 Config      : TiniFile;
 ipBanco     : string;
 localBanco  : string;
-LogExecucao: tstringList;
 g:integer;
 controletempo:ttime;
 teste_scans:string;
@@ -203,7 +227,7 @@ teste_horaDF:string;
 teste_TempoAtrasoAttJogos:string;
 ErroIniFile, ErroSetPastaLogs, ErroConexaoBanco, ErroAtualizarProbabil: boolean;
 begin
-
+    LogExecucao := tstringlist.Create;
 
      try
         config              :=  TIniFile.create(ExtractFilePath(Application.ExeName) + 'config.ini');
@@ -238,8 +262,10 @@ begin
      end;
 
      try
-        LogExecucao := tstringlist.Create;
+
         if ErroIniFile or ErroSetPastaLogs or ErroConexaoBanco or ErroConexaoBanco then begin
+          if LogExecucao.text <> '' then
+            LogExecucao.Add('');
           LogExecucao.Add('Log de erros de execução dos calculos de probabilidades.');
           LogExecucao.Add('Data: ' + formatdatetime('dd/MM/yyyy',now));
           LogExecucao.Add('Hora: ' + formatdatetime('hh:mm',now));

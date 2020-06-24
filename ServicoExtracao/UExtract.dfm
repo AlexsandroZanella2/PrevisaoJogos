@@ -14,19 +14,19 @@ object Service1: TService1
     SQLDialect = 3
     Timeout = 0
     WaitForRestoreConnect = 0
-    Left = 128
-    Top = 128
+    Left = 96
+    Top = 136
   end
   object transacao: TpFIBTransaction
     DefaultDatabase = database
-    Left = 200
-    Top = 128
+    Left = 40
+    Top = 88
   end
   object query: TpFIBQuery
     Transaction = transacao
     Database = database
     Left = 40
-    Top = 144
+    Top = 40
     qoAutoCommit = True
   end
   object dataset: TpFIBDataSet
@@ -35,7 +35,7 @@ object Service1: TService1
       'from JOGOS_TENISMESA')
     Transaction = transSelect
     Database = database
-    Left = 224
+    Left = 176
     Top = 40
     object datasetCODIGO: TFIBIntegerField
       FieldName = 'CODIGO'
@@ -111,10 +111,22 @@ object Service1: TService1
     object datasetSET_5_: TFIBIntegerField
       FieldName = 'SET_5_'
     end
+    object datasetSET_6: TFIBIntegerField
+      FieldName = 'SET_6'
+    end
+    object datasetSET_6_: TFIBIntegerField
+      FieldName = 'SET_6_'
+    end
+    object datasetSET_7: TFIBIntegerField
+      FieldName = 'SET_7'
+    end
+    object datasetSET_7_: TFIBIntegerField
+      FieldName = 'SET_7_'
+    end
   end
   object transSelect: TpFIBTransaction
     DefaultDatabase = database
-    Left = 128
-    Top = 56
+    Left = 176
+    Top = 88
   end
 end
