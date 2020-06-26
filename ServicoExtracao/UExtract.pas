@@ -355,6 +355,7 @@ begin
     i:=0;
     pagina := tstringlist.create;
     identificador:= 'OTHERS - ';
+
     pagina.Text := GetURL('https://m.flashscore.com.br/tenis-de-mesa/?d=1');
     while pagina.Text.Contains('<span>') and not pagina.Text.Contains('<span>Jogo não encontrado.</span>') do begin
         if i = 0 then begin

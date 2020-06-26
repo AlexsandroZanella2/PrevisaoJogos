@@ -5,6 +5,7 @@ object Service13: TService13
   Height = 241
   Width = 339
   object database: TpFIBDatabase
+    Connected = True
     DBName = 'localhost:C:\ServicoExtracao\DADOS.FDB'
     DBParams.Strings = (
       'password=masterkey'
@@ -110,8 +111,45 @@ object Service13: TService13
     object datasetSET_5_: TFIBIntegerField
       FieldName = 'SET_5_'
     end
+    object datasetSET_6: TFIBIntegerField
+      FieldName = 'SET_6'
+    end
+    object datasetSET_6_: TFIBIntegerField
+      FieldName = 'SET_6_'
+    end
+    object datasetSET_7: TFIBIntegerField
+      FieldName = 'SET_7'
+    end
+    object datasetSET_7_: TFIBIntegerField
+      FieldName = 'SET_7_'
+    end
+    object datasetNUM_SETS: TFIBIntegerField
+      FieldName = 'NUM_SETS'
+    end
+    object datasetTOTALPONTOS: TFIBIntegerField
+      FieldName = 'TOTALPONTOS'
+    end
+    object datasetPONTOSJ1: TFIBIntegerField
+      FieldName = 'PONTOSJ1'
+    end
+    object datasetPONTOSJ2: TFIBIntegerField
+      FieldName = 'PONTOSJ2'
+    end
+    object datasetPREV_NUM_SETS: TFIBIntegerField
+      FieldName = 'PREV_NUM_SETS'
+    end
+    object datasetPREV_TOTALPONTOS: TFIBIntegerField
+      FieldName = 'PREV_TOTALPONTOS'
+    end
+    object datasetPREV_PONTOSJ1: TFIBIntegerField
+      FieldName = 'PREV_PONTOSJ1'
+    end
+    object datasetPREV_PONTOSJ2: TFIBIntegerField
+      FieldName = 'PREV_PONTOSJ2'
+    end
   end
   object transSelect: TpFIBTransaction
+    Active = True
     DefaultDatabase = database
     Left = 152
     Top = 128
@@ -198,8 +236,45 @@ object Service13: TService13
     object FIBIntegerField15: TFIBIntegerField
       FieldName = 'SET_5_'
     end
+    object AuxSET_6: TFIBIntegerField
+      FieldName = 'SET_6'
+    end
+    object AuxSET_6_: TFIBIntegerField
+      FieldName = 'SET_6_'
+    end
+    object AuxSET_7: TFIBIntegerField
+      FieldName = 'SET_7'
+    end
+    object AuxSET_7_: TFIBIntegerField
+      FieldName = 'SET_7_'
+    end
+    object AuxNUM_SETS: TFIBIntegerField
+      FieldName = 'NUM_SETS'
+    end
+    object AuxTOTALPONTOS: TFIBIntegerField
+      FieldName = 'TOTALPONTOS'
+    end
+    object AuxPONTOSJ1: TFIBIntegerField
+      FieldName = 'PONTOSJ1'
+    end
+    object AuxPONTOSJ2: TFIBIntegerField
+      FieldName = 'PONTOSJ2'
+    end
+    object AuxPREV_NUM_SETS: TFIBIntegerField
+      FieldName = 'PREV_NUM_SETS'
+    end
+    object AuxPREV_TOTALPONTOS: TFIBIntegerField
+      FieldName = 'PREV_TOTALPONTOS'
+    end
+    object AuxPREV_PONTOSJ1: TFIBIntegerField
+      FieldName = 'PREV_PONTOSJ1'
+    end
+    object AuxPREV_PONTOSJ2: TFIBIntegerField
+      FieldName = 'PREV_PONTOSJ2'
+    end
   end
   object transAux: TpFIBTransaction
+    Active = True
     DefaultDatabase = database
     Left = 280
     Top = 128
