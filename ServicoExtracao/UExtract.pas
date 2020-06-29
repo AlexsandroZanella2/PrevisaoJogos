@@ -74,7 +74,7 @@ implementation
 
 procedure TService1.AtualizaProbabilidades;
 begin
-  ShellExecute(0, 'open', PChar(ExtractFilePath(Application.ExeName) + 'ServiceProc.exe'), nil, nil, SW_SHOWNORMAL);
+  ShellExecute(0, 'open', PChar(ExtractFilePath(Application.ExeName) + 'ServicoProcessamento.exe'), nil, nil, SW_SHOWNORMAL);
 end;
 
 function RemoveAcentos(aText : string) : string;
@@ -274,6 +274,14 @@ begin
                                 'SET_6_ = ' + inttostr(set5_)+ ' , '    +
                                 'SET_7  = ' + inttostr(set5 )+ ' , ' +
                                 'SET_7_ = ' + inttostr(set5_)+ ' '    +
+                                'NUM_SETS = 0 , '+
+                                'TOTALPONTOS = 0 , ' +
+                                'PONTOSJ1 = 0 , ' +
+                                'PONTOSJ2 = 0 , ' +
+                                'PREV_NUM_SETS = 0 , '+
+                                'PREV_TOTALPONTOS = 0 , ' +
+                                'PREV_PONTOSJ1 = 0 , ' +
+                                'PREV_PONTOSJ2 = 0 ' +
                                 'where codigo = ' + inttostr(dataset.FieldByName('codigo').Asinteger)
                                 ;
 
@@ -311,7 +319,15 @@ begin
                                 'SET_6  = 0 , ' +
                                 'SET_6_ = 0 , ' +
                                 'SET_7  = 0 , ' +
-                                'SET_7_ = 0 '   +
+                                'SET_7_ = 0 , ' +
+                                'NUM_SETS = 0 , '+
+                                'TOTALPONTOS = 0 , ' +
+                                'PONTOSJ1 = 0 , ' +
+                                'PONTOSJ2 = 0 , ' +
+                                'PREV_NUM_SETS = 0 , '+
+                                'PREV_TOTALPONTOS = 0 , ' +
+                                'PREV_PONTOSJ1 = 0 , ' +
+                                'PREV_PONTOSJ2 = 0 ' +
                                 'where codigo = ' + inttostr(dataset.FieldByName('codigo').Asinteger)
                                 ;
                     if transacao.active = false or database.Connected = false then begin
@@ -349,12 +365,12 @@ begin
     dataset.SelectSQL.Text := 'select * from JOGOS_TENISMESA where DATA_JOGO > ' +
                               char(39) + formatdatetime('dd.MM.yyyy',IncDay(now,1))+' 00:00 ' + char(39);
     dataset.open;
-     if (DataSet.Eof) then begin
+     if NOT (DataSet.Eof) then begin
      dataset.close;
     dataJogos := IncDay(now, 1);
     i:=0;
     pagina := tstringlist.create;
-    identificador:= 'OTHERS - ';
+    identificador:= 'OUTRAS - ';
 
     pagina.Text := GetURL('https://m.flashscore.com.br/tenis-de-mesa/?d=1');
     while pagina.Text.Contains('<span>') and not pagina.Text.Contains('<span>Jogo não encontrado.</span>') do begin
@@ -400,7 +416,7 @@ begin
                             char(39) + 'P'  + char(39)                              +', ' +
                             '-1'                                                    +', ' +
                             '-1'                                                    +', ' +
-                            '-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1' + ')';
+                            '-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1' + ')';
 
           if transacao.active = false or database.Connected = false then begin
               database.Connected := true;
@@ -422,7 +438,6 @@ begin
        LogExecucao.Add('__________________________________________________________________________________');
        LogExecucao.Add('');
     pagina.destroy;
-    DadosAdicionar.Destroy;
     if ErroCargaD = false then
       cargaDexecutado := true;
   end;

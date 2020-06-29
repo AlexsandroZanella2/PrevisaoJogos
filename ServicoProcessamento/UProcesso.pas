@@ -36,40 +36,7 @@ type
     datasetSET_5_: TFIBIntegerField;
     transSelect: TpFIBTransaction;
     Aux: TpFIBDataSet;
-    FIBIntegerField1: TFIBIntegerField;
-    FIBDateTimeField1: TFIBDateTimeField;
-    FIBStringField1: TFIBStringField;
-    FIBStringField2: TFIBStringField;
-    FIBIntegerField2: TFIBIntegerField;
-    FIBIntegerField3: TFIBIntegerField;
-    FIBStringField3: TFIBStringField;
-    FIBStringField4: TFIBStringField;
-    FIBStringField5: TFIBStringField;
-    FIBIntegerField4: TFIBIntegerField;
-    FIBIntegerField5: TFIBIntegerField;
-    FIBIntegerField6: TFIBIntegerField;
-    FIBIntegerField7: TFIBIntegerField;
-    FIBIntegerField8: TFIBIntegerField;
-    FIBIntegerField9: TFIBIntegerField;
-    FIBIntegerField10: TFIBIntegerField;
-    FIBIntegerField11: TFIBIntegerField;
-    FIBIntegerField12: TFIBIntegerField;
-    FIBIntegerField13: TFIBIntegerField;
-    FIBIntegerField14: TFIBIntegerField;
-    FIBIntegerField15: TFIBIntegerField;
     transAux: TpFIBTransaction;
-    AuxSET_6: TFIBIntegerField;
-    AuxSET_6_: TFIBIntegerField;
-    AuxSET_7: TFIBIntegerField;
-    AuxSET_7_: TFIBIntegerField;
-    AuxNUM_SETS: TFIBIntegerField;
-    AuxTOTALPONTOS: TFIBIntegerField;
-    AuxPONTOSJ1: TFIBIntegerField;
-    AuxPONTOSJ2: TFIBIntegerField;
-    AuxPREV_NUM_SETS: TFIBIntegerField;
-    AuxPREV_TOTALPONTOS: TFIBIntegerField;
-    AuxPREV_PONTOSJ1: TFIBIntegerField;
-    AuxPREV_PONTOSJ2: TFIBIntegerField;
     datasetSET_6: TFIBIntegerField;
     datasetSET_6_: TFIBIntegerField;
     datasetSET_7: TFIBIntegerField;
@@ -122,7 +89,6 @@ procedure TService13.AtualizaProbabilidades;
 var
 jogador1, jogador2:string;
 Prob1,Prob2,j:integer;
-LogErros,dadosAdicionar: tstringList;
 set1,set2,set3,set4,set5,set6,set7,set1_,set2_,set3_,set4_,set5_,set6_,set7_ :integer;
 rodadasJ1, RodadasJ2, pontosJ1, PontosJ2:integer;
 totCalc:integer;
@@ -132,14 +98,13 @@ minPontosPartidaJ2:integer;
 //qtSets = 3 _ 3x0 | 4 _ 3x1 | 5 _ 4x1 | 6 _ 4x2 | 7 _ 4x3
 qtSets:integer;
 begin
- //
+
+    try
     rodadasJ1 := 0;
     rodadasJ2 := 0;
     pontosJ1  := 0;
     pontosJ2  := 0;
 
-    LogErros := tstringlist.Create;
-    dadosAdicionar := tstringlist.create;
 
     dataset.Close;
     dataset.SelectSQL.Text := 'select * from JOGOS_TENISMESA where DATA_JOGO > ' +
@@ -147,6 +112,10 @@ begin
                               ' and tipo = ' + char(39) + 'P' + char(39);
     dataset.Open;
     dataset.First;
+    except
+      LogExecucao.Add('Erro Na inicialização dos cálculos!');
+      LogExecucao.Add('');
+    end;
     while not (DataSet.Eof) do
     begin
              jogador1 := dataset.FieldByName('JOGADOR1').AsString;
@@ -165,8 +134,8 @@ begin
                                             'and jogador1 = ' + char(39) + jogador1 + char(39); ;
                   Aux.Open;
                   if not Aux.Eof then begin
-                    rodadasJ1 := Aux.FieldByName('rodadasJ1').AsInteger;
-                    pontosJ1  := Aux.FieldByName('pontosJ1').AsInteger;
+                    rodadasJ1 := Aux.FieldByName('RODADASJ1').AsInteger;
+                    pontosJ1  := Aux.FieldByName('PONTOSJ1').AsInteger;
                   end;
 
                   Aux.Close;
@@ -233,11 +202,6 @@ begin
                       transacao.active := true
                   end;
 
-                  if transacao.active = false or database.Connected = false then begin
-                      database.Connected := true;
-                      transacao.active := true
-                  end;
-
                 except
                   LogExecucao.add(datetimetostr(now) + ' : Não foi possível atualizar "probs" do registro código ' +dataset.FieldByName('codigo').AsString + '!');;
                   LogExecucao.add('SQL: ' + query.SQL.Text);
@@ -248,10 +212,10 @@ begin
 
                try
                  Aux.Close;
-                 Aux.SelectSQL.Text := 'select count(x.resultado1) resultadoJ1'+
-                                       'from jogos_tenismesa x'+
+                 Aux.SelectSQL.Text := 'select count(x.resultado1) resultadoJ1 '+
+                                       'from jogos_tenismesa x '+
                                        'where x.jogador1 = ' + char(39) + jogador1 + char(39) + ' '+
-                                       'and x.data_jogo < ' + FormatDateTime('dd.MM.yyyy hh:mm',now);
+                                       'and x.data_jogo < ' + char(39) + FormatDateTime('dd.MM.yyyy hh:mm',now) +char(39);
                  Aux.Open;
 
                  if not Aux.Eof then begin
@@ -259,10 +223,10 @@ begin
                  end;
 
                   Aux.Close;
-                 Aux.SelectSQL.Text := 'select count(x.resultado2) resultadoJ1'+
-                                       'from jogos_tenismesa x'+
+                 Aux.SelectSQL.Text := 'select count(x.resultado2) resultadoJ1 '+
+                                       'from jogos_tenismesa x '+
                                        'where x.jogador2 = ' + char(39) + jogador1 + char(39) + ' '+
-                                       'and x.data_jogo < ' + FormatDateTime('dd.MM.yyyy hh:mm',now);
+                                       'and x.data_jogo < ' + char(39) + FormatDateTime('dd.MM.yyyy hh:mm',now) + char(39);
                  Aux.Open;
 
                  if not Aux.Eof then begin
@@ -270,10 +234,10 @@ begin
                  end;
                       {    resultado do jogador 2}
                  Aux.Close;
-                 Aux.SelectSQL.Text := 'select count(x.resultado1) resultadoJ2'+
-                                       'from jogos_tenismesa x'+
+                 Aux.SelectSQL.Text := 'select count(x.resultado1) resultadoJ2 '+
+                                       'from jogos_tenismesa x '+
                                        'where x.jogador1 = ' + char(39) + jogador2 + char(39) + ' '+
-                                       'and x.data_jogo < ' + FormatDateTime('dd.MM.yyyy hh:mm',now);
+                                       'and x.data_jogo < ' +char(39)+ FormatDateTime('dd.MM.yyyy hh:mm',now)+char(39);
                  Aux.Open;
 
                  if not Aux.Eof then begin
@@ -281,10 +245,10 @@ begin
                  end;
 
                   Aux.Close;
-                 Aux.SelectSQL.Text := 'select count(x.resultado2) resultadoJ2'+
-                                       'from jogos_tenismesa x'+
+                 Aux.SelectSQL.Text := 'select count(x.resultado2) resultadoJ2 '+
+                                       'from jogos_tenismesa x '+
                                        'where x.jogador2 = ' + char(39) + jogador2 + char(39) + ' '+
-                                       'and x.data_jogo < ' + FormatDateTime('dd.MM.yyyy hh:mm',now);
+                                       'and x.data_jogo < ' +char(39)+ FormatDateTime('dd.MM.yyyy hh:mm',now) + char(39);
                  Aux.Open;
 
                  if not Aux.Eof then begin
@@ -296,10 +260,17 @@ begin
                  end else begin
                   qtSets := 0;
                  end;
+                  Aux.Close;
 
                  query.SQL.Text := 'update jogos_tenismesa '      +
                                    'set prev_num_sets = ' + inttostr(qtSets) + ' ' +
                                    'where codigo = ' + dataset.FieldByName('codigo').AsString;
+                 query.ExecQuery;
+
+                 if transacao.active = false or database.Connected = false then begin
+                      database.Connected := true;
+                      transacao.active := true
+                 end;
 
                except
                   LogExecucao.add(datetimetostr(now) + ' : Não foi possível atualizar "pre_num_sets" do registro código ' +dataset.FieldByName('codigo').AsString + '!');;
@@ -311,8 +282,98 @@ begin
 
               try
                  //
-              except
+                 Aux.SelectSQL.Text := 'select codigo, SUM(X.set_1 + X.set_2 + x.set_3 + X.set_4 + X.set_5 + x.set_6 + x.set_7) MinPontosj1 '+
+                                       'from jogos_tenismesa x ' +
+                                       'where x.jogador1 = ' + char(39) + jogador1 + char(39) + ' '+
+                                       'and (x.resultado1 + x.resultado2) > 0 '+
+                                       'group by 1 '+
+                                       'order by 2';
+                 Aux.Open;
+                 Aux.First;
+                 if not Aux.Eof then begin
+                    if minPontosPartidaJ1 < 1 then begin
+                      minPontosPartidaJ1 := minPontosPartidaJ1 + Aux.FieldByName('MinPontosJ1').AsInteger;
+                    end else begin
+                      minPontosPartidaJ1 := trunc((minPontosPartidaJ1 + Aux.FieldByName('MinPontosJ1').AsInteger)/2);
+                    end;
+                 end;
+                 Aux.Close;
 
+                 Aux.SelectSQL.Text := 'select codigo, SUM(X.set_1_ + X.set_2_ + x.set_3_ + X.set_4_ + X.set_5_ + x.set_6_ + x.set_7_) MinPontosj1 '+
+                                       'from jogos_tenismesa x ' +
+                                       'where x.jogador2 = ' + char(39) + jogador1 + char(39) + ' '+
+                                       'and (x.resultado1 + x.resultado2) > 0 '+
+                                       'group by 1 '+
+                                       'order by 2';
+                 Aux.Open;
+                 Aux.First;
+                 if not Aux.Eof then begin
+                    if minPontosPartidaJ1 < 1 then begin
+                      minPontosPartidaJ1 := minPontosPartidaJ1 + Aux.FieldByName('MinPontosJ1').AsInteger;
+                    end else begin
+                      minPontosPartidaJ1 := trunc((minPontosPartidaJ1 + Aux.FieldByName('MinPontosJ1').AsInteger)/2);
+                    end;
+                 end;
+                 Aux.Close;
+
+                 Aux.SelectSQL.Text := 'select codigo, SUM(X.set_1 + X.set_2 + x.set_3 + X.set_4 + X.set_5 + x.set_6 + x.set_7) MinPontosj2 '+
+                                       'from jogos_tenismesa x ' +
+                                       'where x.jogador1 = ' + char(39) + jogador1 + char(39) + ' '+
+                                       'and (x.resultado1 + x.resultado2) > 0 '+
+                                       'group by 1 '+
+                                       'order by 2';
+                 Aux.Open;
+                 Aux.First;
+                 if not Aux.Eof then begin
+                    if minPontosPartidaJ2 < 1 then begin
+                      minPontosPartidaJ2 := minPontosPartidaJ2 + Aux.FieldByName('MinPontosJ2').AsInteger;
+                    end else begin
+                      minPontosPartidaJ2 := trunc((minPontosPartidaJ2 + Aux.FieldByName('MinPontosJ2').AsInteger)/2);
+                    end;
+                 end;
+
+                 Aux.Close;
+
+                 Aux.SelectSQL.Text := 'select codigo, SUM(X.set_1_ + X.set_2_ + x.set_3_ + X.set_4_ + X.set_5_ + x.set_6_ + x.set_7_) MinPontosj2 '+
+                                       'from jogos_tenismesa x ' +
+                                       'where x.jogador2 = ' + char(39) + jogador1 + char(39) + ' '+
+                                       'and (x.resultado1 + x.resultado2) > 0 '+
+                                       'group by 1 '+
+                                       'order by 2';
+                 Aux.Open;
+                 Aux.First;
+                 if not Aux.Eof then begin
+                    if minPontosPartidaJ2 < 1 then begin
+                      minPontosPartidaJ2 := minPontosPartidaJ2 + Aux.FieldByName('MinPontosJ2').AsInteger;
+                    end else begin
+                      minPontosPartidaJ2 := trunc((minPontosPartidaJ2 + Aux.FieldByName('MinPontosJ2').AsInteger)/2);
+                    end;
+                 end;
+                 Aux.Close;
+
+                 minPontosPartida := TRUNC((minPontosPartidaJ1 + minPontosPartidaJ2)/2);
+                 if minPontosPartida < (qtSets*11) then begin
+                   minPontosPartida := (qtSets*11);
+                 end;
+
+                 query.SQL.Text := 'update jogos_tenismesa '      +
+                                   'set prev_totalpontos = ' + inttostr(minPontosPartida) + ' , ' +
+                                   'prev_pontosj1 = ' + inttostr(minPontosPartidaJ1) + ' , '  +
+                                   'prev_pontosj2 = ' + inttostr(minPontosPartidaJ2) + '  '   +
+                                   'where codigo = ' + dataset.FieldByName('codigo').AsString;
+
+                 query.ExecQuery;
+
+
+                 if transacao.active = false or database.Connected = false then begin
+                      database.Connected := true;
+                      transacao.active := true
+                 end;
+                 dataset.Next;
+              except
+                 LogExecucao.Add('');
+                 LogExecucao.Add('Não foi possível calcular as probalilidades do Registro ' + dataset.FieldByName('codigo').AsString);
+                 LogExecucao.Add('');
               end;
 
     end;
@@ -356,17 +417,30 @@ begin
      end;
 
      try
-        if (PastaLogs = '\') or (Pastalogs = '') then
-          Pastalogs := 'C:\ServicoExtracao\logs\';
+     if ipBanco = '' then
+        ipBanco := 'localhost';
+     if localBanco = '' then
+        localBanco := 'C:\ServicoExtracao\DADOS.FDB';
+     if database.DBName = '' then
+        database.DBName := 'localhost:C:\ServicoExtracao\DADOS.FDB';
+     if (PastaLogs = '\') or (PastaLogs = '') then
+     Pastalogs := 'C:\ServicoExtracao\logs\';
      except
-        ErroSetPastaLogs := true;
+       ErroSetPastaLogs := true;
      end;
+
 
      try
         database.Connected  := true;
         transacao.active    :=true;
      except
-        ErroConexaoBanco := true;
+        try
+          database.DBName := 'localhost:C:\ServicoExtracao\DADOS.FDB';
+          database.Connected  := true;
+          transacao.active    :=true;
+        except
+          ErroConexaoBanco := true;
+        end;
      end;
 
      try
@@ -393,27 +467,35 @@ begin
           LogExecucao.Add('');
           LogExecucao.Add('___________________________________________________________________________');
           LogExecucao.Add('');
+          ErroIniFile := False;
         end;
         if ErroSetPastaLogs then begin
           LogExecucao.Add('ERROFATAL: pare o processo imediatamente e inicie novamente');
           LogExecucao.Add('');
           LogExecucao.Add('___________________________________________________________________________');
           LogExecucao.Add('');
+          ErroSetPastaLogs :=False;
         end;
         if ErroConexaoBanco then begin
-          LogExecucao.Add(' NÃO FOI POSSIVEL CONECTAR AO BANCO');
+          LogExecucao.Add(' NÃO FOI POSSIVEL CONECTAR AO BANCO ' + database.DBName);
           LogExecucao.Add('');
           LogExecucao.Add('___________________________________________________________________________');
           LogExecucao.Add('');
+          ErroConexaoBanco := False;
         end;
         if ErroAtualizarProbabil then begin
           LogExecucao.Add(' NÃO FOI POSSIVEL ATUALIZAR AS PROBABILIDADES');
           LogExecucao.Add('');
           LogExecucao.Add('___________________________________________________________________________');
           LogExecucao.Add('');
+          ErroAtualizarProbabil := False;
         end;
-        if LogExecucao.Text <> '' then
-        LogExecucao.SaveToFile(formatdatetime('LogProcessamento.'+'dd.mm.yyyy.hhmm.ss',now) + '.txt');
+        if LogExecucao.Text <> '' then Begin
+          LogExecucao.SaveToFile(PastaLogs + 'LogErrosProcessamento.'+ formatdatetime('dd.mm.yyyy.hhmm.ss',now) + '.txt');
+        End else begin
+          LogExecucao.Add('Todos Os calculos foram efetuados com sucesso!');
+          LogExecucao.SaveToFile(PastaLogs + 'LogProcessamento.'+ formatdatetime('dd.mm.yyyy.hhmm.ss',now) + '.txt');
+        end;
         LogExecucao.Destroy;
      finally
 

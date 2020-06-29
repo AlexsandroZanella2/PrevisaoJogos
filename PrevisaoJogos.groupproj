@@ -12,6 +12,12 @@
         <Projects Include="Painel\PainelControle.dproj">
             <Dependencies/>
         </Projects>
+        <Projects Include="WebServer\ServicoWeb.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="Aplicativo\App.dproj">
+            <Dependencies/>
+        </Projects>
     </ItemGroup>
     <ProjectExtensions>
         <Borland.Personality>Default.Personality.12</Borland.Personality>
@@ -47,14 +53,32 @@
     <Target Name="PainelControle:Make">
         <MSBuild Projects="Painel\PainelControle.dproj" Targets="Make"/>
     </Target>
+    <Target Name="ServicoWeb">
+        <MSBuild Projects="WebServer\ServicoWeb.dproj"/>
+    </Target>
+    <Target Name="ServicoWeb:Clean">
+        <MSBuild Projects="WebServer\ServicoWeb.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="ServicoWeb:Make">
+        <MSBuild Projects="WebServer\ServicoWeb.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="App">
+        <MSBuild Projects="Aplicativo\App.dproj"/>
+    </Target>
+    <Target Name="App:Clean">
+        <MSBuild Projects="Aplicativo\App.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="App:Make">
+        <MSBuild Projects="Aplicativo\App.dproj" Targets="Make"/>
+    </Target>
     <Target Name="Build">
-        <CallTarget Targets="ServicoExtracao;ServicoProcessamento;PainelControle"/>
+        <CallTarget Targets="ServicoExtracao;ServicoProcessamento;PainelControle;ServicoWeb;App"/>
     </Target>
     <Target Name="Clean">
-        <CallTarget Targets="ServicoExtracao:Clean;ServicoProcessamento:Clean;PainelControle:Clean"/>
+        <CallTarget Targets="ServicoExtracao:Clean;ServicoProcessamento:Clean;PainelControle:Clean;ServicoWeb:Clean;App:Clean"/>
     </Target>
     <Target Name="Make">
-        <CallTarget Targets="ServicoExtracao:Make;ServicoProcessamento:Make;PainelControle:Make"/>
+        <CallTarget Targets="ServicoExtracao:Make;ServicoProcessamento:Make;PainelControle:Make;ServicoWeb:Make;App:Make"/>
     </Target>
     <Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
 </Project>
