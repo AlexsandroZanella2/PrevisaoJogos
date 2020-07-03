@@ -269,15 +269,15 @@ begin
                                 'SET_4  = ' + inttostr(set4 )+ ' , ' +
                                 'SET_4_ = ' + inttostr(set4_)+ ' , ' +
                                 'SET_5  = ' + inttostr(set5 )+ ' , ' +
-                                'SET_5_ = ' + inttostr(set5_)+ ' , '    +
+                                'SET_5_ = ' + inttostr(set5_)+ ' , ' +
                                 'SET_6  = ' + inttostr(set5 )+ ' , ' +
-                                'SET_6_ = ' + inttostr(set5_)+ ' , '    +
+                                'SET_6_ = ' + inttostr(set5_)+ ' , ' +
                                 'SET_7  = ' + inttostr(set5 )+ ' , ' +
-                                'SET_7_ = ' + inttostr(set5_)+ ' '    +
-                                'NUM_SETS = 0 , '+
-                                'TOTALPONTOS = 0 , ' +
-                                'PONTOSJ1 = 0 , ' +
-                                'PONTOSJ2 = 0 , ' +
+                                'SET_7_ = ' + inttostr(set5_)+ ' , ' +
+                                'NUM_SETS = ' + inttostr(strtoint(scoretime1)+strtoint(scoretime2)) + ' , '+
+                                'TOTALPONTOS = '+ inttostr(set1+set2+set3+set4+set5+set6+set7+set1_+set2_+set3_+set4_+set5_+set6_+set7_) +' , ' +
+                                'PONTOSJ1 = '+ inttostr(set1+set2+set3+set4+set5+set6+set7) +' , ' +
+                                'PONTOSJ2 = '+ inttostr(set1_+set2_+set3_+set4_+set5_+set6_+set7_) +' , ' +
                                 'PREV_NUM_SETS = 0 , '+
                                 'PREV_TOTALPONTOS = 0 , ' +
                                 'PREV_PONTOSJ1 = 0 , ' +
@@ -365,7 +365,8 @@ begin
     dataset.SelectSQL.Text := 'select * from JOGOS_TENISMESA where DATA_JOGO > ' +
                               char(39) + formatdatetime('dd.MM.yyyy',IncDay(now,1))+' 00:00 ' + char(39);
     dataset.open;
-     if NOT (DataSet.Eof) then begin
+    dataset.first;
+     if (DataSet.Eof) then begin
      dataset.close;
     dataJogos := IncDay(now, 1);
     i:=0;
