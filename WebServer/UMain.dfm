@@ -1,9 +1,9 @@
 object frm_Main: Tfrm_Main
   Left = 0
   Top = 0
-  Caption = 'Web Server Rest Teste1'
-  ClientHeight = 355
-  ClientWidth = 507
+  Caption = 'WebServer'
+  ClientHeight = 351
+  ClientWidth = 492
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -15,8 +15,8 @@ object frm_Main: Tfrm_Main
   TextHeight = 13
   object txtinfolabel: TLabel
     Left = 0
-    Top = 342
-    Width = 507
+    Top = 338
+    Width = 492
     Height = 13
     Align = alBottom
     Alignment = taCenter
@@ -26,16 +26,16 @@ object frm_Main: Tfrm_Main
   object Label2: TLabel
     Left = 8
     Top = 51
-    Width = 56
+    Width = 91
     Height = 13
-    Caption = 'Requisi'#231#245'es'
+    Caption = 'Log de Requisi'#231#245'es'
   end
   object Label3: TLabel
     Left = 8
     Top = 195
-    Width = 50
+    Width = 85
     Height = 13
-    Caption = 'Respostas'
+    Caption = 'Log de Respostas'
   end
   object btnAtivar: TBitBtn
     Left = 8
@@ -61,6 +61,7 @@ object frm_Main: Tfrm_Main
     Width = 473
     Height = 116
     TabOrder = 2
+    OnChange = memoRespChange
   end
   object memoReq: TMemo
     Left = 8
@@ -68,6 +69,7 @@ object frm_Main: Tfrm_Main
     Width = 473
     Height = 116
     TabOrder = 3
+    OnChange = memoReqChange
   end
   object IdHTTPServer1: TIdHTTPServer
     Bindings = <>

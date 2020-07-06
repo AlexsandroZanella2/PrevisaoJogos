@@ -15,6 +15,9 @@
         <Projects Include="Aplicativo\App.dproj">
             <Dependencies/>
         </Projects>
+        <Projects Include="WebServer\WebServerRest.dproj">
+            <Dependencies/>
+        </Projects>
     </ItemGroup>
     <ProjectExtensions>
         <Borland.Personality>Default.Personality.12</Borland.Personality>
@@ -59,14 +62,23 @@
     <Target Name="App:Make">
         <MSBuild Projects="Aplicativo\App.dproj" Targets="Make"/>
     </Target>
+    <Target Name="WebServerRest">
+        <MSBuild Projects="WebServer\WebServerRest.dproj"/>
+    </Target>
+    <Target Name="WebServerRest:Clean">
+        <MSBuild Projects="WebServer\WebServerRest.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="WebServerRest:Make">
+        <MSBuild Projects="WebServer\WebServerRest.dproj" Targets="Make"/>
+    </Target>
     <Target Name="Build">
-        <CallTarget Targets="ServicoExtracao;ServicoProcessamento;PainelControle;App"/>
+        <CallTarget Targets="ServicoExtracao;ServicoProcessamento;PainelControle;App;WebServerRest"/>
     </Target>
     <Target Name="Clean">
-        <CallTarget Targets="ServicoExtracao:Clean;ServicoProcessamento:Clean;PainelControle:Clean;App:Clean"/>
+        <CallTarget Targets="ServicoExtracao:Clean;ServicoProcessamento:Clean;PainelControle:Clean;App:Clean;WebServerRest:Clean"/>
     </Target>
     <Target Name="Make">
-        <CallTarget Targets="ServicoExtracao:Make;ServicoProcessamento:Make;PainelControle:Make;App:Make"/>
+        <CallTarget Targets="ServicoExtracao:Make;ServicoProcessamento:Make;PainelControle:Make;App:Make;WebServerRest:Make"/>
     </Target>
     <Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
 </Project>

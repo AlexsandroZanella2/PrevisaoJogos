@@ -287,7 +287,7 @@ Begin
             JSONObject.AddPair(TJSONPair.Create('USER', dataset.FieldByName('nome').AsString));
             JSONObject.AddPair(TJSONPair.Create('EMAIL', dataset.FieldByName('email').AsString));
             JSONObject.AddPair(TJSONPair.Create('CPF', dataset.FieldByName('cpf').AsString));
-            JSONObject.AddPair(TJSONPair.Create('DATAPERMISSAO', dataset.FieldByName('data_permissao').AsString));
+            JSONObject.AddPair(TJSONPair.Create('DATAPERMISSAO', formatdatetime('dd.MM.yyyy hh:mm',strtodatetime(dataset.FieldByName('data_permissao').AsString))));
             JSONObject.AddPair(TJSONPair.Create('FILTRO', dataset.FieldByName('perc_filtro_jogos').AsString));
             JSONObject.AddPair(TJSONPair.Create('NASC', dataset.FieldByName('nascimento').AsString));
             JSONObject.AddPair(TJSONPair.Create('CHAVE', dataset.FieldByName('cod').AsString));
@@ -376,24 +376,126 @@ end;
 
 function TServerMethods1.GetListaJogosFuturos(usuario,senha,probs:string) : String;
 Var
-     List        : TStringList;
      ID          : Integer;
      LJson       : TJSONObject;
      LJsonObject : TJSONObject;
      LArr        : TJSONArray;
 Begin
-   //
+     LJsonObject := TJSONObject.Create;
+     LArr        := TJSONArray.Create;
+
+     database.Open;
+
+
+     dataset.Close;
+     dataset.SelectSQL.Text :=  'select * from usuarios '+
+                                'where ((nome = '+char(39)+usuario+char(39)+ ') or ( '+
+                                'cpf = '+char(39)+usuario+char(39)+ ') or ( '+
+                                'email = '+char(39)+usuario+char(39)+ ')) '+
+                                'and senha = '+char(39)+senha+char(39) + ' ' +
+                                'and data_permissao >= ' + char(39) + formatdatetime('dd.MM.yyyy hh:mm',now)+char(39);
+
+     dataset.Open;
+     dataset.First;
+  if not(dataset.Eof) then begin
+    try
+
+         dataset.Close;
+         dataset.SelectSQL.Text :='select * from jogos_tenismesa '+
+                                  'where  data_jogo > ' + char(39)+formatdatetime('dd.MM.yyyy ',incday(now,+1))+'00:00'+char(39);
+         dataset.Open;
+         dataset.First;
+
+         while not(dataset.Eof) do Begin
+             LJson := TJSONObject.Create;
+             LJson.AddPair(TJSONPair.Create('CODIGO', dataset.FieldByName('codigo').AsString));
+             LJson.AddPair(TJSONPair.Create('COMPETICAO', dataset.FieldByName('nome_competicao').AsString));
+             LJson.AddPair(TJSONPair.Create('JOGADORES', (dataset.FieldByName('jogador1').AsString + ' X ' + dataset.FieldByName('jogador2').AsString)));
+             LJson.AddPair(TJSONPair.Create('DATAJOGO', formatdatetime('dd.MM.yyyy hh:mm',strtodatetime(dataset.FieldByName('data_jogo').Asstring))));
+             LJson.AddPair(TJSONPair.Create('TIPO', dataset.FieldByName('tipo').AsString));
+             LJson.AddPair(TJSONPair.Create('PROB1', dataset.FieldByName('PROB1').AsString));
+             LJson.AddPair(TJSONPair.Create('PROB2', dataset.FieldByName('PROB2').AsString));
+             LJson.AddPair(TJSONPair.Create('PREVNUMSETS', dataset.FieldByName('prev_num_sets').AsString));
+             LJson.AddPair(TJSONPair.Create('PREVPONTOSJ1', dataset.FieldByName('prev_pontosj1').AsString));
+             LJson.AddPair(TJSONPair.Create('PREVPONTOSJ2', dataset.FieldByName('prev_pontosj2').AsString));
+             LJson.AddPair(TJSONPair.Create('PREVTOTALPONTOS', dataset.FieldByName('prev_totalpontos').AsString));
+             LArr.Add(LJson);
+             dataset.Next;
+         End;
+
+         LJsonObject.AddPair(TJSONPair.Create('JOGOS', LArr));
+         Result := LJsonObject.ToString;
+     Finally
+         dataset.Close;
+         LJsonObject.Free;
+     end;
+  end;
 End;
 
 function TServerMethods1.GetListaJogosAtuais(usuario,senha,probs:string) : String;
 Var
-     List        : TStringList;
      ID          : Integer;
      LJson       : TJSONObject;
      LJsonObject : TJSONObject;
      LArr        : TJSONArray;
 Begin
-    //
+     LJsonObject := TJSONObject.Create;
+     LArr        := TJSONArray.Create;
+
+     database.Open;
+
+
+     dataset.Close;
+     dataset.SelectSQL.Text :=  'select * from usuarios '+
+                                'where ((nome = '+char(39)+usuario+char(39)+ ') or ( '+
+                                'cpf = '+char(39)+usuario+char(39)+ ') or ( '+
+                                'email = '+char(39)+usuario+char(39)+ ')) '+
+                                'and senha = '+char(39)+senha+char(39) + ' ' +
+                                'and data_permissao >= ' + char(39) + formatdatetime('dd.MM.yyyy hh:mm',now)+char(39);
+
+     dataset.Open;
+     dataset.First;
+  if not(dataset.Eof) then begin
+    try
+
+         dataset.Close;
+         dataset.SelectSQL.Text :='select * from jogos_tenismesa '+
+                                  'where  data_jogo < ' + char(39) +
+                                  formatdatetime('dd.MM.yyyy',now) +' 23:59'+char(39) + ' '+
+                                  'and data_jogo > '+ char(39) + formatdatetime('dd.MM.yyyy',now) + ' 00:00'+char(39) + ' '+
+                                  'and (prob1 > '+ probs+') or (prob2 > '+ probs +')';
+         dataset.Open;
+         dataset.First;
+
+         while not(dataset.Eof) do Begin
+             LJson := TJSONObject.Create;
+             LJson.AddPair(TJSONPair.Create('CODIGO', dataset.FieldByName('codigo').AsString));
+             LJson.AddPair(TJSONPair.Create('COMPETICAO', dataset.FieldByName('nome_competicao').AsString));
+             LJson.AddPair(TJSONPair.Create('JOGADORES', (dataset.FieldByName('jogador1').AsString + ' X ' + dataset.FieldByName('jogador2').AsString)));
+             LJson.AddPair(TJSONPair.Create('RESULTADO', (dataset.FieldByName('resultado1').AsString + ' : ' + dataset.FieldByName('resultado2').AsString)));
+             LJson.AddPair(TJSONPair.Create('DATAJOGO', formatdatetime('dd.MM.yyyy hh:mm',strtodatetime(dataset.FieldByName('data_jogo').Asstring))));
+             LJson.AddPair(TJSONPair.Create('TIPO', dataset.FieldByName('tipo').AsString));
+             LJson.AddPair(TJSONPair.Create('NUMSETS', dataset.FieldByName('num_sets').AsString));
+             LJson.AddPair(TJSONPair.Create('PONTOSJ1', dataset.FieldByName('pontosj1').AsString));
+             LJson.AddPair(TJSONPair.Create('PONTOSJ2', dataset.FieldByName('pontosj2').AsString));
+             LJson.AddPair(TJSONPair.Create('TOTALPONTOS', dataset.FieldByName('totalpontos').AsString));
+             LJson.AddPair(TJSONPair.Create('PROB1', dataset.FieldByName('PROB1').AsString));
+             LJson.AddPair(TJSONPair.Create('PROB2', dataset.FieldByName('PROB2').AsString));
+             LJson.AddPair(TJSONPair.Create('PREVNUMSETS', dataset.FieldByName('prev_num_sets').AsString));
+             LJson.AddPair(TJSONPair.Create('PREVPONTOSJ1', dataset.FieldByName('prev_pontosj1').AsString));
+             LJson.AddPair(TJSONPair.Create('PREVPONTOSJ2', dataset.FieldByName('prev_pontosj2').AsString));
+             LJson.AddPair(TJSONPair.Create('PREVTOTALPONTOS', dataset.FieldByName('prev_totalpontos').AsString));
+             LArr.Add(LJson);
+             dataset.Next;
+         End;
+
+         LJsonObject.AddPair(TJSONPair.Create('JOGOS', LArr));
+         Result := LJsonObject.ToString;
+     Finally
+         dataset.Close;
+         LJsonObject.Free;
+     end;
+  end;
 End;
 
 function TServerMethods1.AtualizaCadastro (OldNome, NewNome,OldPass, newPass,OldEmail, NewEmail, OldFiltroProbs, NewFiltroProbs : String) : String;
@@ -423,7 +525,7 @@ Begin
                               'perc_filtro_jogos = ' +char(39) + NewFiltroProbs +char(39) ;
 
 
-try
+          try
               if (database.Connected = false) or (transacao_Query.Active = false) then begin
                   database.Open;
                   transacao_Query.Active := true;
@@ -451,13 +553,37 @@ Var
 Begin
      JSONObject := TJSONObject.Create;
      try
+        dataset.Close;
+        dataset.SelectSQL.Text := 'select * from usuarios '+
+                                  'where nome = ' + char(39)+Nome+char(39)+ ' '+
+                                  'and senha = ' + char(39)+Senha+char(39)+ ' '+
+                                  'and email = ' + char(39)+email+char(39)+ ' '+
+                                  'and cpf = ' + char(39)+cpf+char(39);
+         dataset.open;
+         dataset.First;
 
-         if true then Begin
-            JSONObject.AddPair(TJSONPair.Create('STATUS', 'OK'));
-            JSONObject.AddPair(TJSONPair.Create('MENSAGEM', 'Deletado com sucesso'));
+
+         if not (dataset.Eof) then Begin
+            Query.SQL.Text := 'delete from usuarios '+
+                              'where nome = ' + char(39)+Nome+char(39)+ ' '+
+                                  'and senha = ' + char(39)+Senha+char(39)+ ' '+
+                                  'and email = ' + char(39)+email+char(39)+ ' '+
+                                  'and cpf = ' + char(39)+cpf+char(39);
+          try
+              if (database.Connected = false) or (transacao_Query.Active = false) then begin
+                  database.Open;
+                  transacao_Query.Active := true;
+              end;
+              query.ExecQuery;
+              transacao_Query.Commit;
+            finally
+              JSONObject.AddPair(TJSONPair.Create('STATUS', 'OK'));
+              JSONObject.AddPair(TJSONPair.Create('MENSAGEM', 'SUCESS'));
+              Result := JSONObject.ToString;
+            end;
          End else begin
             JSONObject.AddPair(TJSONPair.Create('STATUS', 'OK'));
-            JSONObject.AddPair(TJSONPair.Create('MENSAGEM', 'Cadastro não encontrado'));
+            JSONObject.AddPair(TJSONPair.Create('MENSAGEM', 'LOGINERROR'));
          end;
          Result := JSONObject.ToString;
      Finally

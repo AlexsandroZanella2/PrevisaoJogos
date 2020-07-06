@@ -31,6 +31,8 @@ type
     procedure btnPararClick(Sender: TObject);
     procedure IdHTTPServer1CommandOther(AContext: TIdContext;
       ARequestInfo: TIdHTTPRequestInfo; AResponseInfo: TIdHTTPResponseInfo);
+    procedure memoReqChange(Sender: TObject);
+    procedure memoRespChange(Sender: TObject);
   private
     { Private declarations }
     procedure LoglastRequest (ARequestInfo: TIdHTTPRequestInfo);
@@ -61,6 +63,21 @@ Begin
      memoResp.Lines.Add(AResponseInfo.ContentText);
      LeaveCriticalSection(CriticalSection);
 End;
+
+procedure Tfrm_Main.memoReqChange(Sender: TObject);
+begin
+   if memoReq.Lines.Count > 1000 then begin
+     memoReq.Lines.Text := '';
+   end;
+
+end;
+
+procedure Tfrm_Main.memoRespChange(Sender: TObject);
+begin
+    if memoResp.Lines.Count > 1000 then begin
+     memoResp.Lines.Text := '';
+   end;
+end;
 
 procedure Tfrm_Main.ApplicationEvents1Minimize(Sender: TObject);
 begin
