@@ -14,23 +14,12 @@ type
     ToolBar1: TToolBar;
     stMenu: TSpeedButton;
     Rectangle1: TRectangle;
-    Image1: TImage;
     Layout2: TLayout;
     Image2: TImage;
     lbUsuario: TLabel;
     lbCPF: TLabel;
     Layout3: TLayout;
-    Image3: TImage;
-    Layout4: TLayout;
-    Layout6: TLayout;
-    lbLoginUsr: TLabel;
-    Layout8: TLayout;
-    Label1: TLabel;
-    Layout5: TLayout;
-    Layout7: TLayout;
-    Edit1: TEdit;
-    Edit2: TEdit;
-    Layout9: TLayout;
+    ltAssinar: TLayout;
     Layout10: TLayout;
     Layout11: TLayout;
     RoundRect1: TRoundRect;
@@ -41,6 +30,28 @@ type
     CheckBox1: TCheckBox;
     Layout15: TLayout;
     CheckBox2: TCheckBox;
+    Rectangle2: TRectangle;
+    ltLogReg: TLayout;
+    Layout6: TLayout;
+    lbLoginUsr: TLabel;
+    Layout8: TLayout;
+    Label1: TLabel;
+    Layout5: TLayout;
+    Edit1: TEdit;
+    Layout7: TLayout;
+    Edit2: TEdit;
+    MultiView2: TMultiView;
+    Layout16: TLayout;
+    Layout17: TLayout;
+    Layout18: TLayout;
+    RoundRect2: TRoundRect;
+    Label3: TLabel;
+    Layout19: TLayout;
+    RoundRect3: TRoundRect;
+    Label4: TLabel;
+    Layout20: TLayout;
+    Layout4: TLayout;
+    Image1: TImage;
   private
     { Private declarations }
   public
@@ -59,9 +70,13 @@ var
   cpf:string;
 
 
+
 implementation
 
 {$R *.fmx}
 {$R *.NmXhdpiPh.fmx ANDROID}
+{$R *.Windows.fmx MSWINDOWS}
+{$R *.Macintosh.fmx MACOS}
+{$R *.iPhone55in.fmx IOS}
 
 end.
