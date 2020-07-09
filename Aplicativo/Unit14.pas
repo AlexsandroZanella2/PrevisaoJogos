@@ -5,7 +5,8 @@ interface
 uses
   System.SysUtils, System.Types, System.UITypes, System.Classes, System.Variants,
   FMX.Types, FMX.Controls, FMX.Forms, FMX.Graphics, FMX.Dialogs, FMX.Objects,
-  FMX.StdCtrls, FMX.Layouts, FMX.Controls.Presentation, FMX.MultiView, FMX.Edit;
+  FMX.StdCtrls, FMX.Layouts, FMX.Controls.Presentation, FMX.MultiView, FMX.Edit,
+  FMX.Gestures, System.Actions, FMX.ActnList, FMX.TabControl;
 
 type
   TForm14 = class(TForm)
@@ -40,7 +41,6 @@ type
     Edit1: TEdit;
     Layout7: TLayout;
     Edit2: TEdit;
-    MultiView2: TMultiView;
     Layout16: TLayout;
     Layout17: TLayout;
     Layout18: TLayout;
@@ -52,6 +52,9 @@ type
     Layout20: TLayout;
     Layout4: TLayout;
     Image1: TImage;
+    TabControl1: TTabControl;
+    ActionList1: TActionList;
+    GestureManager1: TGestureManager;
   private
     { Private declarations }
   public
@@ -74,9 +77,5 @@ var
 implementation
 
 {$R *.fmx}
-{$R *.NmXhdpiPh.fmx ANDROID}
-{$R *.Windows.fmx MSWINDOWS}
-{$R *.Macintosh.fmx MACOS}
-{$R *.iPhone55in.fmx IOS}
 
 end.

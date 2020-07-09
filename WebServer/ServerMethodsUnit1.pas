@@ -24,9 +24,9 @@ type
     function AtualizaCadastro  (OldNome,             // Nome Antigo
                                 NewNome,             // Nome Novo
                                 OldPass,             // Senha Antiga
-                                newPass,             // Email antigo
-                                OldEmail,            // Email Novo
-                                NewEmail,            // Senha Nova
+                                newPass,             // Senha Nova
+                                OldEmail,            // Email Antigo
+                                NewEmail,            // Email Novo
                                 OldFiltroProbs,      // Filtro de probalilidades antigo
                                 NewFiltroProbs : String) : String;// '' novo
 

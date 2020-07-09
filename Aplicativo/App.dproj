@@ -6,7 +6,7 @@
         <MainSource>App.dpr</MainSource>
         <Base>True</Base>
         <Config Condition="'$(Config)'==''">Debug</Config>
-        <Platform Condition="'$(Platform)'==''">Android</Platform>
+        <Platform Condition="'$(Platform)'==''">Win32</Platform>
         <TargetedPlatforms>37983</TargetedPlatforms>
         <AppType>Application</AppType>
     </PropertyGroup>
@@ -397,11 +397,31 @@
         <Android_NotificationIcon72>mesh\raquetes\pngegg72x.png</Android_NotificationIcon72>
         <Android_NotificationIcon96>mesh\raquetes\pngegg96x.png</Android_NotificationIcon96>
         <VerInfo_Keys>package=com.bottenisdemesa.app;label=Bot - Tênis de Mesa;versionCode=1;versionName=1.0.0;persistent=False;restoreAnyVersion=False;installLocation=auto;largeHeap=False;theme=TitleBar;hardwareAccelerated=true;apiKey=</VerInfo_Keys>
+        <AUP_ACCESS_NETWORK_STATE>true</AUP_ACCESS_NETWORK_STATE>
+        <AUP_ACCESS_LOCATION_EXTRA_COMMANDS>true</AUP_ACCESS_LOCATION_EXTRA_COMMANDS>
+        <AUP_BATTERY_STATS>true</AUP_BATTERY_STATS>
+        <AUP_BLUETOOTH>true</AUP_BLUETOOTH>
+        <AUP_ACCESS_WIFI_STATE>true</AUP_ACCESS_WIFI_STATE>
+        <AUP_ACCESS_NOTIFICATION_POLICY>true</AUP_ACCESS_NOTIFICATION_POLICY>
+        <AUP_MANAGE_DOCUMENTS>true</AUP_MANAGE_DOCUMENTS>
+        <AUP_BIND_PRINT_SERVICE>true</AUP_BIND_PRINT_SERVICE>
+        <AUP_READ_CALENDAR>true</AUP_READ_CALENDAR>
+        <AUP_READ_CONTACTS>true</AUP_READ_CONTACTS>
+        <AUP_READ_SMS>true</AUP_READ_SMS>
+        <AUP_READ_PHONE_NUMBERS>true</AUP_READ_PHONE_NUMBERS>
+        <AUP_VIBRATE>true</AUP_VIBRATE>
+        <AUP_USE_BIOMETRIC>true</AUP_USE_BIOMETRIC>
+        <AUP_COM_VENDING_BILLING>true</AUP_COM_VENDING_BILLING>
+        <AUP_CHANGE_WIFI_STATE>true</AUP_CHANGE_WIFI_STATE>
+        <AUP_CHANGE_WIFI_MULTICAST_STATE>true</AUP_CHANGE_WIFI_MULTICAST_STATE>
+        <AUP_CHANGE_CONFIGURATION>true</AUP_CHANGE_CONFIGURATION>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Cfg_1_Win32)'!=''">
         <DCC_RemoteDebug>false</DCC_RemoteDebug>
         <AppEnableRuntimeThemes>true</AppEnableRuntimeThemes>
         <AppDPIAwarenessMode>PerMonitorV2</AppDPIAwarenessMode>
+        <VerInfo_IncludeVerInfo>true</VerInfo_IncludeVerInfo>
+        <VerInfo_Locale>1033</VerInfo_Locale>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Cfg_1_Win64)'!=''">
         <AppEnableRuntimeThemes>true</AppEnableRuntimeThemes>
@@ -454,8 +474,9 @@
                 </Excluded_Packages>
             </Delphi.Personality>
             <Deployment Version="3">
-                <DeployFile LocalName="Android\Debug\strings.xml" Configuration="Debug" Class="Android_Strings">
+                <DeployFile LocalName="mesh\raquetes\pngegg72x.png" Configuration="Debug" Class="Android_NotificationIcon72">
                     <Platform Name="Android">
+                        <RemoteName>ic_notification.png</RemoteName>
                         <Overwrite>true</Overwrite>
                     </Platform>
                 </DeployFile>
@@ -466,12 +487,6 @@
                     </Platform>
                 </DeployFile>
                 <DeployFile LocalName="mesh\raquetes\pngegg144x.png" Configuration="Debug" Class="Android_LauncherIcon144">
-                    <Platform Name="Android">
-                        <RemoteName>ic_launcher.png</RemoteName>
-                        <Overwrite>true</Overwrite>
-                    </Platform>
-                </DeployFile>
-                <DeployFile LocalName="mesh\raquetes\pngegg36x.png" Configuration="Debug" Class="Android_LauncherIcon36">
                     <Platform Name="Android">
                         <RemoteName>ic_launcher.png</RemoteName>
                         <Overwrite>true</Overwrite>
@@ -595,9 +610,8 @@
                         <Overwrite>true</Overwrite>
                     </Platform>
                 </DeployFile>
-                <DeployFile LocalName="mesh\raquetes\pngegg72x.png" Configuration="Debug" Class="Android_NotificationIcon72">
+                <DeployFile LocalName="Android\Debug\strings.xml" Configuration="Debug" Class="Android_Strings">
                     <Platform Name="Android">
-                        <RemoteName>ic_notification.png</RemoteName>
                         <Overwrite>true</Overwrite>
                     </Platform>
                 </DeployFile>
