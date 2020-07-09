@@ -8,7 +8,7 @@ uses
   FMX.Objects, FMX.Edit, FMX.Layouts, FMX.MultiView, FMX.Controls.Presentation,
   FMX.TabControl, System.Actions, FMX.ActnList, FMX.Gestures, FMX.Colors,
   FMX.DateTimeCtrls, System.Math.Vectors, FMX.Controls3D, FMX.Layers3D,
-  System.ImageList, FMX.ImgList;
+  System.ImageList, FMX.ImgList, System.IOUtils, iniFiles, DateUtils;
 
 type
   TForm15 = class(TForm)
@@ -93,9 +93,13 @@ type
     CheckBox3: TCheckBox;
     Layout33: TLayout;
     Edit6: TEdit;
-    ImageList1: TImageList;
     SpeedButton2: TSpeedButton;
+    ltDadosJogos: TLayout;
+    ltNewUser: TLayout;
     procedure FormCreate(Sender: TObject);
+    procedure DateEdit1Change(Sender: TObject);
+    procedure CarregaDados;
+    function Login(user,pass:string):boolean;
   private
     { Private declarations }
   public
@@ -104,22 +108,98 @@ type
 
 var
   Form15: TForm15;
-  logok: boolean;
+  logOK: boolean;
   usuario: string;
   senha: string;
-  dataPermissao : string;
+  dataPermissao : tdatetime;
   dtNascimento:string;
   filtroProbs: string;
   email: string;
   cpf:string;
+  Config:tiniFile;
 
 implementation
 
 {$R *.fmx}
 
+function TForm15.Login(user,pass:string):Boolean;
+begin
+  //
+  Result := true;
+end;
+
+procedure TForm15.CarregaDados;
+var
+asd:tstringlist;
+begin
+  if TFile.Exists(System.IOUtils.TPath.Combine(System.IOUtils.tpath.getdocumentspath,'system.ini')) then begin
+    try
+    config := TIniFile.Create(System.IOUtils.TPath.Combine(System.IOUtils.tpath.getdocumentspath,'system.ini'));
+    usuario := Config.readString('CONFIG','usuario','');
+    senha   := Config.readString('CONFIG','senha','');
+    cpf := Config.readString('CONFIG','cpf','');
+    email := Config.ReadString('CONFIG','email','');
+    dataPermissao := strtodatetime(Config.ReadString('CONFIG','permissao',''));
+    dtNascimento  := Config.ReadString('CONFIG','nascimento','');
+    filtroProbs   := Config.ReadString('CONFIG','filtroprobs','');
+    logOK := Login(cpf,senha);
+    except
+      logOk := true;
+    end;
+  end else begin
+      logOK := true;
+
+    try
+     asd := TStringList.Create;
+     asd.Add('[CONFIG]');
+     ASD.Add('cpf='+'000.000.000-00');
+     asd.Add('usuario='+'Alexsandro Zanella');
+     asd.Add('email=teste@teste.com');
+     asd.Add('permissao=30.12.2099 00:00');
+     asd.Add('nascimento=01.01.1999');
+     asd.Add('senha=teste');
+     asd.Add('filtroprobs=60');
+     asd.SaveToFile(System.IOUtils.TPath.Combine(System.IOUtils.tpath.getdocumentspath,'system.ini'));
+    finally
+      ShowMessage('Arquivo criado!');
+    end;
+
+  end;
+end;
+
+procedure TForm15.DateEdit1Change(Sender: TObject);
+begin
+    if logOK then begin
+         if formatdatetime('dd/MM/yyyy',DateEdit1.Date) = formatdatetime('dd/MM/yyyy',now) then begin
+           // http://localhost:8080/GetListaJogosAtuais/usuario/senha/probs
+         end;
+         if formatdatetime('dd/MM/yyyy',DateEdit1.Date) > formatdatetime('dd/MM/yyyy',now) then begin
+           // http://localhost:8080/GetListaJogosFuturos/usuario/senha/probs
+         end;
+         if formatdatetime('dd/MM/yyyy',DateEdit1.Date) < formatdatetime('dd/MM/yyyy',now) then begin
+           // http://localhost:8080/GetListaJogosPassados/usuario/senha/data
+         end;
+    end;
+end;
+
 procedure TForm15.FormCreate(Sender: TObject);
+
 begin
      DateEdit1.Date := strtodate(formatdatetime('dd/MM/yyyy',now));
+     CarregaDados;
+
+     if logOK then begin
+        ltNewUser.Visible := false;
+        lbUsuario.Text := usuario;
+        lbCPF.Text     := CPF;
+        ltLogReg.Visible:= false;
+        if now > incday(dataPermissao,-3) then begin
+            ltAssinar.Visible := true;
+        end else begin
+            ltAssinar.Visible := False;
+        end;
+
+     end;
 end;
 
 end.
