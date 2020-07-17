@@ -14,7 +14,7 @@ uses
    FMX.Helpers.Android, Androidapi.Jni.GraphicsContentViewText, Androidapi.Jni.Net,
    Androidapi.Jni.JavaTypes, Androidapi.Helpers,
   {$ENDIF}
-   System.Net.HttpClient, System.Net.HttpClientComponent;
+   System.Net.HttpClient, System.Net.HttpClientComponent, UFormAbertura;
 
 type
   TForm15 = class(TForm)
@@ -207,6 +207,12 @@ type
     Layout44: TLayout;
     DUserCPF: TEdit;
     Layout61: TLayout;
+    lsAssinaturaExpirada: TLayout;
+    Label26: TLabel;
+    Layout62: TLayout;
+    RoundRect8: TRoundRect;
+    Label27: TLabel;
+    Panel1: TPanel;
     procedure FormCreate(Sender: TObject);
     procedure DateEdit1Change(Sender: TObject);
     procedure CarregaDados;
@@ -237,6 +243,10 @@ type
     function GetSystemPath:string;
     procedure Label23Click(Sender: TObject);
     procedure sbConfEditDadosDblClick(Sender: TObject);
+    procedure sbCancelaEdicDadosClick(Sender: TObject);
+    procedure RoundRect8Click(Sender: TObject);
+    procedure Label27Click(Sender: TObject);
+    procedure VertScrollBox2Click(Sender: TObject);
 
   private
     { Private declarations }
@@ -330,7 +340,6 @@ begin
         lbUsuario.Text              := usuario        ;
         lbCPF.Text                  := CPF            ;
         ltLogReg.Visible            := false          ;
-        ltDadosJogos.Visible        := true           ;
         label8.Text                 := dataPermissao  ;
         SpeedButton2.Visible        := true           ;
         SpeedButton7.Visible        := true           ;
@@ -343,6 +352,15 @@ begin
         end else begin
             ltAssinar.Visible := False;
         end;
+
+        if strtoint(daytest) > strtoint(test) then begin
+          lsAssinaturaExpirada.Visible  := true;
+          ltDadosJogos.Visible          := false;
+        end else begin
+          lsAssinaturaExpirada.Visible  := false;
+          ltDadosJogos.Visible          := true;
+        end;
+
 
         //Limpa tela de registro
         Edit4.Text := '';
@@ -399,6 +417,11 @@ begin
   end;
 end;
 
+procedure TForm15.VertScrollBox2Click(Sender: TObject);
+begin
+
+end;
+
 {$IF DEFINED (ANDROID)}
 function OpenURL(const URL: string; const DisplayError: Boolean = False): Boolean;
 var
@@ -426,11 +449,16 @@ begin
     MultiView1.Visible := true;
 end;
 
+procedure TForm15.Label27Click(Sender: TObject);
+begin
+    MultiView1.ShowMaster;
+end;
+
 procedure TForm15.Label6Click(Sender: TObject);
 begin
 {$IF DEFINED (ANDROID)}
     if CheckBox1.IsChecked then begin
-      OpenURL('',false)
+      OpenURL('http://mpago.la/2AzhhSN',false)
     end;
 {$ENDIF}
 {$IF DEFINED (MSWINDOWS)}
@@ -468,7 +496,7 @@ begin
     ShowMessage('Sem conexão à internet!');
     ABORT;
   end;
-  ShowMessage(RESTResLogin.Content);  //TESTE DE RESPOSTA
+  //ShowMessage(RESTResLogin.Content);  //TESTE DE RESPOSTA
 
   if RESTResLogin.Content.Contains('LOGINERROR') then begin
     abort
@@ -543,6 +571,11 @@ begin
     TabControl3.ActiveTab := TabItem5;
 end;
 
+procedure TForm15.RoundRect8Click(Sender: TObject);
+begin
+    MultiView1.ShowMaster;
+end;
+
 procedure TForm15.rrRegistrarClick(Sender: TObject);
 var
 tc:string;
@@ -607,7 +640,7 @@ end;
 procedure TForm15.rrTenhoContaClick(Sender: TObject);
 begin
     TabControl3.ActiveTab := TabItem7;
-   MultiView1.Visible := true;
+   MultiView1.ShowMaster;
 end;
 
 procedure TForm15.SpeedButton10Click(Sender: TObject);
@@ -767,8 +800,23 @@ begin
     end;
 end;
 
+procedure TForm15.sbCancelaEdicDadosClick(Sender: TObject);
+begin
+      sbConfEditDados.StyleLookup := 'composetoolbutton';
+     sbCancelaEdicDados.Visible  := false;
+     sbCancelaEdicDados.Enabled  := false;
+
+     DUserNome.Enabled    := false;
+     DUserEmail.Enabled   := false;
+     DUserFiltro.Enabled  := false;
+     DUserSenha.Enabled   := false;
+
+     Layout35.Enabled     := false;
+end;
+
 procedure TForm15.sbConfEditDadosDblClick(Sender: TObject);
 begin
+
      if logOK then begin
      sbConfEditDados.StyleLookup := 'donetoolbutton';
      sbCancelaEdicDados.Visible  := true;
@@ -780,6 +828,7 @@ begin
      DUserSenha.Enabled   := true;
 
      Layout35.Enabled     := true;
+
      end else begin
       sbConfEditDados.StyleLookup := 'composetoolbutton';
      sbCancelaEdicDados.Visible  := false;

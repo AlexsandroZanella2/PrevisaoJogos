@@ -3,10 +3,10 @@ unit JogoTenis;
 interface
 
 uses
-  System.SysUtils, System.Classes, FMX.Types, FMX.Colors;
+  System.SysUtils, System.Classes,FMX.Objects, FMX.Types, FMX.Colors, FMX.Layouts, FMX.StdCtrls;
 
 type
-  TJogoTenis = class(TPanel)
+  TJogoTenis = class(TLayout)
   private
     { Private declarations }
     pCodJogo          :string;
@@ -59,13 +59,22 @@ type
     function  GetPrevTotalPontos      :string;
     procedure SetPrevTotalPontos(Value:string);
 
+    procedure CriaLayoutMain;
+    procedure CriaLayoutJogadores;
+    procedure CriaLayoutPontuacao;
+    procedure CriaLabelJogadores;
+    procedure CriaLabelPontos;
+
 
   protected
     { Protected declarations }
   public
     { Public declarations }
+    FLayoutJogadores  : TLayout;
+    FLayoutPontuacao  : TLayout;
     constructor Create(AOwner: TComponent); override;
     destructor  Destroy;                    override;
+
 
   published
     { Published declarations }
@@ -95,12 +104,57 @@ implementation
 
 constructor TJogoTenis.Create(AOwner: TComponent);
 begin
-  //
+  inherited Create(AOwner);
+        Height          :=  97    ;
+        Width           :=  200   ;
+        Visible         :=  true  ;
+        Margins.Left    :=  0     ;
+        Margins.Right   :=  0     ;
+        Margins.Top     :=  0     ;
+        Margins.Bottom  :=  0     ;
 end;
+
+destructor TJogoTenis.Destroy;
+begin
+   inherited Destroy;
+end;
+
 
 procedure Register;
 begin
   RegisterComponents('Standard', [TJogoTenis]);
+end;
+
+procedure TJogoTenis.CriaLayoutJogadores;
+begin
+  FLayoutJogadores := TLayout.Create(Self);
+    with FLayoutJogadores do
+      begin
+        Parent          :=  Self  ;
+        Align           :=  Top   ;
+        Height          :=  33    ;
+        Visible         :=  true  ;
+        Margins.Left    :=  0     ;
+        Margins.Right   :=  0     ;
+        Margins.Top     :=  0     ;
+        Margins.Bottom  :=  0     ;
+      end;
+end;
+
+procedure TJogoTenis.CriaLayoutPontuacao;
+begin
+  FLayoutPontuacao := TLayout.Create(Self);
+    with FLayoutPontuacao do
+      begin
+        Parent          :=  Self  ;
+        Align           :=  Top   ;
+        Height          :=  33    ;
+        Visible         :=  true  ;
+        Margins.Left    :=  0     ;
+        Margins.Right   :=  0     ;
+        Margins.Top     :=  0     ;
+        Margins.Bottom  :=  0     ;
+      end;
 end;
 
 end.

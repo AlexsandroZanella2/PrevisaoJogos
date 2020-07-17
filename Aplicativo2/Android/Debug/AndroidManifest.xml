@@ -4,7 +4,7 @@
         package="com.bottenisdemesa.app"
         android:versionCode="1"
         android:versionName="1.0.0"
-        android:installLocation="auto">
+        android:installLocation="internalOnly">
 
     <uses-sdk android:minSdkVersion="19" android:targetSdkVersion="28" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
