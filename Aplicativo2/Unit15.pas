@@ -14,7 +14,8 @@ uses
    FMX.Helpers.Android, Androidapi.Jni.GraphicsContentViewText, Androidapi.Jni.Net,
    Androidapi.Jni.JavaTypes, Androidapi.Helpers,
   {$ENDIF}
-   System.Net.HttpClient, System.Net.HttpClientComponent, UFormAbertura;
+   System.Net.HttpClient, System.Net.HttpClientComponent, UFormAbertura,
+  JogoTenis;
 
 type
   TForm15 = class(TForm)
@@ -172,13 +173,13 @@ type
     Layout53: TLayout;
     RoundRect6: TRoundRect;
     Label18: TLabel;
-    Layout54: TLayout;
-    Layout55: TLayout;
-    Label19: TLabel;
-    Layout56: TLayout;
-    Label20: TLabel;
-    Label21: TLabel;
-    Label22: TLabel;
+    JogoTenisTeste: TLayout;
+    LayoutJogadores: TLayout;
+    LabelX1: TLabel;
+    LayoutPontuacao: TLayout;
+    LabelSetsJ1: TLabel;
+    LabelX2: TLabel;
+    LabelSetsJ2: TLabel;
     Layout57: TLayout;
     rrRegistrar: TRoundRect;
     lbRegistrar: TLabel;
@@ -202,7 +203,6 @@ type
     RESTResNovoCadastro: TRESTResponse;
     Layout60: TLayout;
     Image7: TImage;
-    Label24: TLabel;
     Label25: TLabel;
     Layout44: TLayout;
     DUserCPF: TEdit;
@@ -212,12 +212,32 @@ type
     Layout62: TLayout;
     RoundRect8: TRoundRect;
     Label27: TLabel;
-    Panel1: TPanel;
+    RESTReqExcluiCadastro: TRESTRequest;
+    RESTResExcluiCadastro: TRESTResponse;
+    RESTReqAtualizaCadastro: TRESTRequest;
+    RESTResAtualizaCadastro: TRESTResponse;
+    RESTReqJogosPassados: TRESTRequest;
+    RESTReqJogosFuturos: TRESTRequest;
+    RESTReqJogosAtuais: TRESTRequest;
+    RESTResJogosPassados: TRESTResponse;
+    RESTResJogosAtuais: TRESTResponse;
+    RESTResJogosFuturos: TRESTResponse;
+    LabelJogador1: TLabel;
+    LabelJogador2: TLabel;
+    LabelPontosJ2: TLabel;
+    LabelPontosJ1: TLabel;
+    LayoutLiga: TLayout;
+    LabelCompeticao: TLabel;
+    LabelDataCompeticao: TLabel;
+    LayoutSeparador: TLayout;
+    LabelSeparador: TLabel;
     procedure FormCreate(Sender: TObject);
     procedure DateEdit1Change(Sender: TObject);
     procedure CarregaDados;
     procedure Login(user,pass:string);
     procedure VerificaLogin;
+    procedure DeletaConta(dUser, dSenha, dEmail, dCPF:string);
+    procedure AtualizaCadastro(oUser, nUser, oSenha, nSenha, oEmail, nEmail, oFiltro, nFiltro:string);
     procedure Label9Click(Sender: TObject);
     procedure SpeedButton10Click(Sender: TObject);
     procedure SpeedButton3Click(Sender: TObject);
@@ -240,6 +260,10 @@ type
     procedure UnLogin;
     procedure Registrar(rNome, rSenha, rEmail, rCPF, rFiltro,rNasciemnto:string);   //fulano/senha/email/cpf/filtroprobs/dtnascimento
     procedure DeletaSystemIni;
+    procedure CriaJogo(cCodJogo, cCompeticao, cJogador1, cJogador2, cResultado,
+                       cTipo, cDataJogo, cNumSets, cPontosJ1, cPontosJ2, cTotalPontos, cProb1, cProb2,
+                       cPrevNumSets, cPrevPontosJ1, cPrevPontosJ2, cPrevTotalPontos:string);
+    procedure DestroyJogos;
     function GetSystemPath:string;
     procedure Label23Click(Sender: TObject);
     procedure sbConfEditDadosDblClick(Sender: TObject);
@@ -247,6 +271,7 @@ type
     procedure RoundRect8Click(Sender: TObject);
     procedure Label27Click(Sender: TObject);
     procedure VertScrollBox2Click(Sender: TObject);
+    procedure SpeedButton7Click(Sender: TObject);
 
   private
     { Private declarations }
@@ -265,6 +290,7 @@ var
   cpf:string;
   Config:tiniFile;
   dataPermissao:string;
+  Jogos : Array of TJogoTenis;
 
 const linkServer          = 'http://botstenisdemesa.ddns.net:8080/';
 
@@ -283,9 +309,47 @@ const lsJogosFuturos      = 'http://botstenisdemesa.ddns.net:8080/GetListaJogosF
 const lsJogosAtuais       = 'http://botstenisdemesa.ddns.net:8080/GetListaJogosAtuais/';
                          //usuario/senha/probs
 
+const CODIGO = 'CODIGO';
+CONST COMPETICAO = 'COMPETICAO';
+const JOGADORES = 'JOGADORES';
+const RESULTADO = 'RESULTADO';
+const DATAJOGO = 'DATAJOGO';
+const TIPO = 'TIPO';
+const NUMSETS = 'NUMSETS';
+const PONTOSJ1 = 'PONTOSJ1';
+const PONTOSJ2 = 'PONTOSJ2';
+const TOTALPONTOS = 'TOTALPONTOS';
+const PROB1 = 'PROB1';
+const PROB2 = 'PROB2';
+const PREVNUMSETS = 'PREVNUMSETS';
+const PREVPONTOSJ1 = 'PREVPONTOSJ1';
+const PREVPONTOSJ2 = 'PREVPONTOSJ2';
+const PREVTOTALPONTOS = 'PREVTOTALPONTOS';
+
 implementation
 
 {$R *.fmx}
+
+procedure TForm15.DestroyJogos;
+var
+cont: Integer;
+begin
+  for Cont := Low(Jogos) to High(Jogos) do begin
+    Destroy(Jogos[Cont]);
+  end;
+
+end;
+
+procedure TForm15.CriaJogo(cCodJogo: string; cCompeticao: string; cJogador1: string; cJogador2: string; cResultado: string; cTipo: string; cDataJogo: string; cNumSets: string; cPontosJ1: string; cPontosJ2: string; cTotalPontos: string; cProb1: string; cProb2: string; cPrevNumSets: string; cPrevPontosJ1: string; cPrevPontosJ2: string; cPrevTotalPontos: string);
+begin
+  SetLength(Jogos, High(Jogos) + 2);
+  Jogos[High(Jogos)] := TJogoTenis.Create(cCodJogo, cCompeticao, cJogador1, cJogador2, cResultado,
+                       cTipo, cDataJogo, cNumSets, cPontosJ1, cPontosJ2, cTotalPontos, cProb1, cProb2,
+                       cPrevNumSets, cPrevPontosJ1, cPrevPontosJ2, cPrevTotalPontos);
+  Jogos[High(Jogos)].Parent := ltDadosJogos;
+  Jogos[High(Jogos)].Align := Top;
+  Jogos[High(Jogos)].Name := 'j' + IntToStr(High(Jogos));
+end;
 
 function GetURL(const AURL: string): string;
 var
@@ -326,6 +390,7 @@ procedure TForm15.UnLogin;
 begin
         logOK := false;
         VerificaLogin;
+        DeletaSystemIni;
 end;
 
 procedure TForm15.VerificaLogin;
@@ -474,6 +539,72 @@ begin
       CheckBox4.IsChecked := true;
     end;
 
+end;
+
+procedure TForm15.DeletaConta(dUser, dSenha, dEmail, dCPF:string);
+const b = '/';
+begin
+ if logOK then begin
+
+   RESTExcluiCadastro.BaseURL := lsExcluiCadastro + dUser + b + dSenha + b + dEmail + b + dCPF;
+   RESTReqExcluiCadastro.Method := TRESTRequestMethod.rmGET;
+
+   try
+    RESTReqExcluiCadastro.Execute;
+   except
+    ShowMessage('Sem conexão à internet!');
+    ABORT;
+   end;
+
+   if RESTResExcluiCadastro.Content.Contains('LOGINERROR') then begin
+     Showmessage('Não foi possível excluir sua conta no momento.');
+   end else if RESTResExcluiCadastro.Content.Contains('SUCESS') then BEGIN
+     ShowMessage('Conforme solicitado, sua conta foi excluida permanentemente');
+     DeletaSystemIni;
+     logOK:= false;
+     VerificaLogin;
+     TabControl3.ActiveTab := TabItem7;
+   END else begin
+     ShowMessage('Erro de conexão. RESTError.');
+   end;
+
+ end else begin
+   ShowMessage('Você não está logado!');
+ end;
+end;
+
+procedure TForm15.AtualizaCadastro(oUser: string; nUser: string; oSenha: string; nSenha: string; oEmail: string; nEmail: string; oFiltro: string; nFiltro: string);
+const b = '/';
+begin
+  if logOK then begin
+    RESTAtualizaCadastro.BaseURL := lsAtualizaCadastro + oUser + b + nUser + b + oSenha + b + nSenha + b +
+                                                        oEmail + b + nEmail + b + oFiltro + b + nFiltro;
+    RESTReqAtualizaCadastro.Method := TRESTRequestMethod.rmGET;
+
+    try
+      RESTReqAtualizaCadastro.Execute;
+    except
+      ShowMessage('Sem conexão à internet');
+      abort;
+    end;
+
+    if RESTResAtualizaCadastro.Content.Contains('LOGINERROR') then BEGIN
+      ShowMessage('Erro de Login!');
+      Abort;
+    END else if RESTResAtualizaCadastro.Content.Contains('SUCESS') then begin
+      ShowMessage('Dados Atualizados com sucesso!');
+      UnLogin;
+      Login(nEmail, nSenha);
+      CarregaDados;
+      VerificaLogin;
+      TabControl3.ActiveTab := TabItem7;
+    end else begin
+      ShowMessage('Erro ao Atualizar. RESTError');
+    end;
+
+  end else begin
+    ShowMessage('Você não está logado!');
+  end;
 end;
 
 procedure TForm15.Login(user,pass:string);
@@ -684,6 +815,11 @@ begin
    TabControl3.ActiveTab := TabItem7;
 end;
 
+procedure TForm15.SpeedButton7Click(Sender: TObject);
+begin
+DeletaConta(usuario,senha, email, cpf);
+end;
+
 procedure TForm15.SpeedButton8Click(Sender: TObject);
 begin
     TabControl3.ActiveTab := TabItem3;
@@ -770,9 +906,17 @@ begin
 end;
 
 procedure TForm15.DateEdit1Change(Sender: TObject);
+var
+cCodJogo, cCompeticao, cJogador1, cJogador2, cResultado,
+cTipo, cDataJogo, cNumSets, cPontosJ1, cPontosJ2, cTotalPontos, cProb1, cProb2,
+cPrevNumSets, cPrevPontosJ1, cPrevPontosJ2, cPrevTotalPontos:string;
+dJogos:TStringList;
+const b = '/';
+const s = '","';
 begin
     if logOK then begin
-         if formatdatetime('dd/MM/yyyy',DateEdit1.Date) = formatdatetime('dd/MM/yyyy',now) then begin
+      dJogos := TStringList.Create;
+         if DateEdit1.Date = now then begin
            // http://localhost:8080/GetListaJogosAtuais/usuario/senha/probs
          end;
          if formatdatetime('dd/MM/yyyy',DateEdit1.Date) > formatdatetime('dd/MM/yyyy',now) then begin
@@ -780,7 +924,34 @@ begin
          end;
          if formatdatetime('dd/MM/yyyy',DateEdit1.Date) < formatdatetime('dd/MM/yyyy',now) then begin
            // http://localhost:8080/GetListaJogosPassados/usuario/senha/data
+           RESTJogosPassados.BaseURL := lsJogosPassados + b + cpf + b + senha + b + formatdatetime('dd.MM.yyyy',dateedit1.Date);
+           RESTReqJogosPassados.Method := TRESTRequestMethod.rmGET;
+
+           try
+             RESTReqJogosPassados.Execute;
+           except
+             ShowMessage('Sem conexão à internet!');
+           end;
+
+           if RESTResJogosPassados.Content.Contains('JOGOS') then BEGIN
+            dJogos.Text := RESTResJogosPassados.Content;
+              while dJogos.Text.Contains(TOTALPONTOS) do begin
+                dJogos.Text := copy(dJogos.Text, pos(CODIGO, dJogos.Text)+9);
+                cCodJogo := copy(dJogos.Text, 1, pos(s, dJogos.Text)+3);
+              end;
+
+           END else if RESTResJogosPassados.Content.Contains('LOGINERROR') then begin
+             ShowMessage('É necessário ter uma assinatura válida para visualizar os jogos.');
+           end else begin
+             ShowMessage('Erro de conexão.RESTError');
+           end;
+
+
+
          end;
+      dJogos.Destroy;
+    end else begin
+      ShowMessage('É necessário estar logado para visualizar os jogos.');
     end;
 end;
 
@@ -815,32 +986,59 @@ begin
 end;
 
 procedure TForm15.sbConfEditDadosDblClick(Sender: TObject);
+var
+EditMode:Boolean;
 begin
 
-     if logOK then begin
-     sbConfEditDados.StyleLookup := 'donetoolbutton';
-     sbCancelaEdicDados.Visible  := true;
-     sbCancelaEdicDados.Enabled  := true;
+ if not ((DUserNome = '') or (DUserEmail = '') or (DUserFiltro = '') or (DUserSenha = '')) then begin
 
-     DUserNome.Enabled    := true;
-     DUserEmail.Enabled   := true;
-     DUserFiltro.Enabled  := true;
-     DUserSenha.Enabled   := true;
 
-     Layout35.Enabled     := true;
+  if logOK then begin
+   if CheckBox4.IsChecked then begin
 
+     if not EditMode then begin
+
+      sbConfEditDados.StyleLookup := 'donetoolbutton';
+      sbCancelaEdicDados.Visible  := true;
+      sbCancelaEdicDados.Enabled  := true;
+
+      DUserNome.Enabled    := true;
+      DUserEmail.Enabled   := true;
+      DUserFiltro.Enabled  := true;
+      DUserSenha.Enabled   := true;
+
+      Layout35.Enabled     := true;
+       EditMode := true;
      end else begin
+
+      try
+         AtualizaCadastro(usuario, DUserNome.Text, senha, DUserSenha, email, DUserEmail,filtroProbs, DUserFiltro);
+      finally
+
+      end;
+
       sbConfEditDados.StyleLookup := 'composetoolbutton';
-     sbCancelaEdicDados.Visible  := false;
-     sbCancelaEdicDados.Enabled  := false;
+      sbCancelaEdicDados.Visible  := false;
+      sbCancelaEdicDados.Enabled  := false;
 
-     DUserNome.Enabled    := false;
-     DUserEmail.Enabled   := false;
-     DUserFiltro.Enabled  := false;
-     DUserSenha.Enabled   := false;
+      DUserNome.Enabled    := false;
+      DUserEmail.Enabled   := false;
+      DUserFiltro.Enabled  := false;
+      DUserSenha.Enabled   := false;
 
-     Layout35.Enabled     := false;
+      Layout35.Enabled     := false;
+      EditMode := False;
      end;
+   end else begin
+     ShowMessage('É necessário aceitar os termos!');
+   end;
+
+  end else begin
+     ShowMessage('Você não está logado');
+  end;
+ end else begin
+   ShowMessage('Preencha todos os campos!');
+ end;
 end;
 
 end.
