@@ -115,10 +115,10 @@ type
     const CorRed   = TColor($0000FF);
     const CorGreen = TColor($008000);
     const CorCinza = TColor($D3D3D3);
-    constructor Create(AOwner: TComponent); overload;
-    constructor Create(cCodJogo, cCompeticao, cJogador1, cJogador2, cResultado,
+    constructor Create(AOwner: TComponent); override;
+    constructor CreateExec(cCodJogo, cCompeticao, cJogador1, cJogador2, cResultado,
                        cTipo, cDataJogo, cNumSets, cPontosJ1, cPontosJ2, cTotalPontos, cProb1, cProb2,
-                       cPrevNumSets, cPrevPontosJ1, cPrevPontosJ2, cPrevTotalPontos:string;AOwner: TComponent); overload;
+                       cPrevNumSets, cPrevPontosJ1, cPrevPontosJ2, cPrevTotalPontos:string;AOwner: TComponent);// override;
     destructor  Destroy;                    override;
 
 
@@ -148,7 +148,7 @@ procedure Register;
 
 implementation
 
-constructor TJogoTenis.Create(cCodJogo, cCompeticao, cJogador1, cJogador2, cResultado,
+constructor TJogoTenis.CreateExec(cCodJogo, cCompeticao, cJogador1, cJogador2, cResultado,
                        cTipo, cDataJogo, cNumSets, cPontosJ1, cPontosJ2, cTotalPontos, cProb1, cProb2,
                        cPrevNumSets, cPrevPontosJ1, cPrevPontosJ2, cPrevTotalPontos:string;AOwner: TComponent);
 begin
@@ -161,6 +161,7 @@ begin
         Margins.Top     :=  0     ;
         Margins.Bottom  :=  0     ;
         Align := TAlignLayout.Top;
+        Enabled         := true;
 
         pCodJogo          := cCodJogo         ;
         pCompeticao       := cCompeticao      ;

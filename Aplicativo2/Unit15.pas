@@ -231,6 +231,8 @@ type
     LabelDataCompeticao: TLabel;
     LayoutSeparador: TLayout;
     LabelSeparador: TLabel;
+    ProgressBar1: TProgressBar;
+    JogoTenis1: TJogoTenis;
     procedure FormCreate(Sender: TObject);
     procedure DateEdit1Change(Sender: TObject);
     procedure CarregaDados;
@@ -290,7 +292,13 @@ var
   cpf:string;
   Config:tiniFile;
   dataPermissao:string;
-  Jogos : Array of TJogoTenis;
+  Jogos               : Array of TLayout;
+  LytJogadores : array of TLayout;
+    LabelXJogadores : array of TLabel;
+
+  LytPontuacao : ARRAY OF TLayout;
+  LytLiga      : array of TLayout;
+  LytSeparador : array of TLayout;
 
 const linkServer          = 'http://botstenisdemesa.ddns.net:8080/';
 
@@ -335,7 +343,7 @@ var
 cont: Integer;
 begin
   for Cont := Low(Jogos) to High(Jogos) do begin
-    Destroy(Jogos[Cont]);
+    FreeAndNil(Jogos[Cont]);
   end;
 
 end;
@@ -343,11 +351,18 @@ end;
 procedure TForm15.CriaJogo(cCodJogo: string; cCompeticao: string; cJogador1: string; cJogador2: string; cResultado: string; cTipo: string; cDataJogo: string; cNumSets: string; cPontosJ1: string; cPontosJ2: string; cTotalPontos: string; cProb1: string; cProb2: string; cPrevNumSets: string; cPrevPontosJ1: string; cPrevPontosJ2: string; cPrevTotalPontos: string);
 begin
   SetLength(Jogos, High(Jogos) + 2);
-  Jogos[High(Jogos)] := TJogoTenis.Create(cCodJogo, cCompeticao, cJogador1, cJogador2, cResultado,
+    TRY
+      Jogos[High(Jogos)] := TJogoTenis.CreateExec(cCodJogo, cCompeticao, cJogador1, cJogador2, cResultado,
                        cTipo, cDataJogo, cNumSets, cPontosJ1, cPontosJ2, cTotalPontos, cProb1, cProb2,
-                       cPrevNumSets, cPrevPontosJ1, cPrevPontosJ2, cPrevTotalPontos);
-  Jogos[High(Jogos)].Parent := ltDadosJogos;
-  Jogos[High(Jogos)].Align := Top;
+                       cPrevNumSets, cPrevPontosJ1, cPrevPontosJ2, cPrevTotalPontos, ltDadosJogos);
+                       Jogos[High(Jogos)].Parent := ltDadosJogos;
+                       ShowMessage(Jogos[High(Jogos)].Parent.Name + ' | ' + ltDadosJogos.Visible.ToString());
+    except
+      showmessage('Erro ao criar TJogoTenis');
+    END;
+
+
+  Jogos[High(Jogos)].Align := TAlignLayout.Top;
   Jogos[High(Jogos)].Name := 'j' + IntToStr(High(Jogos));
 end;
 
@@ -911,6 +926,7 @@ cCodJogo, cCompeticao, cJogador1, cJogador2, cResultado,
 cTipo, cDataJogo, cNumSets, cPontosJ1, cPontosJ2, cTotalPontos, cProb1, cProb2,
 cPrevNumSets, cPrevPontosJ1, cPrevPontosJ2, cPrevTotalPontos:string;
 dJogos:TStringList;
+Posicao:integer;
 const b = '/';
 const s = '","';
 begin
@@ -918,40 +934,113 @@ begin
       dJogos := TStringList.Create;
          if DateEdit1.Date = now then begin
            // http://localhost:8080/GetListaJogosAtuais/usuario/senha/probs
-         end;
+         end else
+
+{:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::}
+
          if formatdatetime('dd/MM/yyyy',DateEdit1.Date) > formatdatetime('dd/MM/yyyy',now) then begin
            // http://localhost:8080/GetListaJogosFuturos/usuario/senha/probs
-         end;
+         end else
+
+{:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::}
+
          if formatdatetime('dd/MM/yyyy',DateEdit1.Date) < formatdatetime('dd/MM/yyyy',now) then begin
            // http://localhost:8080/GetListaJogosPassados/usuario/senha/data
-           RESTJogosPassados.BaseURL := lsJogosPassados + b + cpf + b + senha + b + formatdatetime('dd.MM.yyyy',dateedit1.Date);
-           RESTReqJogosPassados.Method := TRESTRequestMethod.rmGET;
+          // RESTJogosPassados.BaseURL := lsJogosPassados + cpf + b + senha + b + formatdatetime('dd.MM.yyyy',dateedit1.Date);
+           //RESTReqJogosPassados.Method := TRESTRequestMethod.rmGET;
 
-           try
-             RESTReqJogosPassados.Execute;
-           except
-             ShowMessage('Sem conexão à internet!');
-           end;
+          try
+           //  RESTReqJogosPassados.Execute;
+           dJogos.Text := GetURL(lsJogosPassados + cpf + b + senha + b + formatdatetime('dd.MM.yyyy',dateedit1.Date));
 
-           if RESTResJogosPassados.Content.Contains('JOGOS') then BEGIN
-            dJogos.Text := RESTResJogosPassados.Content;
+           //if RESTResJogosPassados.Content.Contains('JOGOS') then BEGIN
+           if dJogos.Text.contains('JOGOS') then begin
+            //dJogos.Text := RESTResJogosPassados.Content;
+            ProgressBar1.Visible := true;
+            ProgressBar1.Position.X := 0;
+            ProgressBar1.Max := Length(dJogos.Text);
               while dJogos.Text.Contains(TOTALPONTOS) do begin
+                cCodJogo := ''; cCompeticao := ''; cJogador1 := ''; cJogador2 := ''; cResultado := '';
+                cTipo := ''; cDataJogo := ''; cNumSets := ''; cPontosJ1 := ''; cPontosJ2 := ''; cTotalPontos := ''; cProb1 := ''; cProb2 := '';
+                cPrevNumSets := ''; cPrevPontosJ1 := ''; cPrevPontosJ2 := ''; cPrevTotalPontos := '';
+                // CODIGO
                 dJogos.Text := copy(dJogos.Text, pos(CODIGO, dJogos.Text)+9);
-                cCodJogo := copy(dJogos.Text, 1, pos(s, dJogos.Text)+3);
-              end;
+                cCodJogo    := copy(dJogos.Text, 1, pos(s, dJogos.Text)-1);
+                Posicao     := Trunc(ProgressBar1.Max - Length(dJogos.Text));
+                ProgressBar1.Position.X := Posicao;//TPosition(Posicao);
+                //COMPETICAO
+                dJogos.Text := copy(dJogos.Text, pos(COMPETICAO, dJogos.Text)+13);
+                cCompeticao := copy(dJogos.Text, 1, pos(s, dJogos.Text)-1);
+                Posicao     := Trunc(ProgressBar1.Max - Length(dJogos.Text));
+                ProgressBar1.Position.X := Posicao;
+                //JOGADOR1
+                dJogos.Text := copy(dJogos.Text, pos(JOGADORES, dJogos.Text)+12);
+                cJogador1   := copy(dJogos.Text, 1, pos(' X ', dJogos.Text)-1);
+                Posicao     := Trunc(ProgressBar1.Max - Length(dJogos.Text));
+                ProgressBar1.Position.x := Posicao;
+                //JOGADOR2
+                dJogos.Text := copy(dJogos.Text, pos(' X ', dJogos.Text)+3);
+                cJogador2   := copy(dJogos.Text, 1, pos(s, dJogos.Text)-1);
+                Posicao     := Trunc(ProgressBar1.Max - Length(dJogos.Text));
+                ProgressBar1.Position.X := Posicao;
+                //RESULTADO
+                dJogos.Text := copy(dJogos.Text, pos(RESULTADO, dJogos.Text)+12);
+                cResultado  := copy(dJogos.Text, 1, pos(s, dJogos.Text)-1);
+                Posicao     := Trunc(ProgressBar1.Max - Length(dJogos.Text));
+                ProgressBar1.Position.X := Posicao;
+                //DATAJOGO
+                dJogos.Text := copy(dJogos.Text, pos(DATAJOGO, dJogos.Text)+11);
+                cDataJogo   := copy(dJogos.Text, 1, pos(s, dJogos.Text)-1);
+                Posicao     := Trunc(ProgressBar1.Max - Length(dJogos.Text));
+                ProgressBar1.Position.X := Posicao;
+                //TIPO
+                dJogos.Text := copy(dJogos.Text, pos(TIPO, dJogos.Text)+7);
+                cTipo       := copy(dJogos.Text, 1, pos(s, dJogos.Text)-1);
+                Posicao     := Trunc(ProgressBar1.Max - Length(dJogos.Text));
+                ProgressBar1.Position.X := Posicao;
+                //NUMSETS
+                dJogos.Text := copy(dJogos.Text, pos(NUMSETS, dJogos.Text)+10);
+                cTipo       := copy(dJogos.Text, 1, pos(s, dJogos.Text)-1);
+                Posicao     := Trunc(ProgressBar1.Max - Length(dJogos.Text));
+                ProgressBar1.Position.X := Posicao;
+                //PONTOSJ1
+                dJogos.Text := copy(dJogos.Text, pos(PONTOSJ1, dJogos.Text)+11);
+                cPontosJ1   := copy(dJogos.Text, 1, pos(s, dJogos.Text)-1);
+                Posicao     := Trunc(ProgressBar1.Max - Length(dJogos.Text));
+                ProgressBar1.Position.X := Posicao;
+                //PONTOSJ2
+                dJogos.Text := copy(dJogos.Text, pos(PONTOSJ2, dJogos.Text)+11);
+                cPontosJ2   := copy(dJogos.Text, 1, pos(s, dJogos.Text)-1);
+                Posicao     := Trunc(ProgressBar1.Max - Length(dJogos.Text));
+                ProgressBar1.Position.X := Posicao;
+                //TOTALPONTOS
+                dJogos.Text := copy(dJogos.Text, pos(TOTALPONTOS, dJogos.Text)+14);
+                cTotalPontos   := copy(dJogos.Text, 1, pos('"', dJogos.Text)-1);
+                Posicao     := Trunc(ProgressBar1.Max - Length(dJogos.Text));
+                ProgressBar1.Position.X := Posicao;
 
+                //CRIA JOGO
+                CriaJogo(cCodJogo, cCompeticao, cJogador1, cJogador2, cResultado,
+                         cTipo, cDataJogo, cNumSets, cPontosJ1, cPontosJ2, cTotalPontos, cProb1, cProb2,
+                         cPrevNumSets, cPrevPontosJ1, cPrevPontosJ2, cPrevTotalPontos);
+              end;
+              ProgressBar1.Visible:=false;
            END else if RESTResJogosPassados.Content.Contains('LOGINERROR') then begin
              ShowMessage('É necessário ter uma assinatura válida para visualizar os jogos.');
            end else begin
-             ShowMessage('Erro de conexão.RESTError');
+             ShowMessage('Erro Desconhecido');
+           end;
+           except
+             ShowMessage('Sem conexão ao servidor!');
            end;
 
 
-
          end;
-      dJogos.Destroy;
-    end else begin
-      ShowMessage('É necessário estar logado para visualizar os jogos.');
+
+{:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::}
+
+      dJogos.Clear;
+      ProgressBar1.Visible := false;
     end;
 end;
 
@@ -960,12 +1049,14 @@ procedure TForm15.FormCreate(Sender: TObject);
 begin
     try
      TabControl3.ActiveTab := TabItem7;
-     DateEdit1.Date := strtodate(formatdatetime('dd/MM/yyyy',now));
+     logOK := false;
+
      if TFile.Exists(GetSystemPath) then begin
         CarregaDados;
      end;
 
      VerificaLogin;
+     DateEdit1.Date := strtodate(formatdatetime('dd/MM/yyyy',now));
     except
       ShowMessage('Erro Fatal na inicialização!');
     end;
@@ -990,7 +1081,7 @@ var
 EditMode:Boolean;
 begin
 
- if not ((DUserNome = '') or (DUserEmail = '') or (DUserFiltro = '') or (DUserSenha = '')) then begin
+ if not ((DUserNome.Text = '') or (DUserEmail.Text = '') or (DUserFiltro.Text = '') or (DUserSenha.Text = '')) then begin
 
 
   if logOK then begin
@@ -1012,7 +1103,7 @@ begin
      end else begin
 
       try
-         AtualizaCadastro(usuario, DUserNome.Text, senha, DUserSenha, email, DUserEmail,filtroProbs, DUserFiltro);
+         AtualizaCadastro(usuario, DUserNome.Text, senha, DUserSenha.Text, email, DUserEmail.Text,filtroProbs, DUserFiltro.Text);
       finally
 
       end;
