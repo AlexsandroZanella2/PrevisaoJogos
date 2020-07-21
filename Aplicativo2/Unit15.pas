@@ -22,7 +22,7 @@ type
     TabItem7: TTabItem;
     ToolBar3: TToolBar;
     SpeedButton1: TSpeedButton;
-    VertScrollBox4: TVertScrollBox;
+    vsPrincipal: TVertScrollBox;
     TabItem8: TTabItem;
     ToolBar6: TToolBar;
     Label4: TLabel;
@@ -231,6 +231,7 @@ type
     LayoutSeparadorteste: TLayout;
     LabelSeparadorteste: TLabel;
     ProgressBar1: TProgressBar;
+    Button1: TButton;
     procedure FormCreate(Sender: TObject);
     procedure DateEdit1Change(Sender: TObject);
     procedure CarregaDados;
@@ -294,6 +295,7 @@ type
 
     procedure CriaLayoutSeparador;
       procedure CriaLabelSeparador;
+    procedure Button1Click(Sender: TObject);
 
   private
     { Private declarations }
@@ -450,6 +452,8 @@ begin
       begin
         Parent          :=  LabelXJogadores[High(LabelXJogadores)]  ;
         Align           :=  TAlignLayout.Left;
+        width           := 161;
+        AutoSize        := false;
         Text            := cJogador1;
         TextSettings.Font.Size := 18;
         TextSettings.FontColor := TColor($000000); // Black
@@ -469,7 +473,9 @@ begin
     with LabelJogador2[High(LabelJogador2)] do
       begin
         Parent          :=  LabelXJogadores[High(LabelXJogadores)]  ;
-        Align           :=  TAlignLayout.Left;
+        Align           :=  TAlignLayout.Right;
+        width           := 161;
+        AutoSize        := false;
         Text            := cJogador2;
         TextSettings.Font.Size := 18;
         TextSettings.FontColor := TColor($000000); // Black
@@ -499,8 +505,11 @@ begin
         Margins.Top     :=  0     ;
         Margins.Bottom  :=  0     ;
         CriaLabelPontosJ1(cTipo, cPontosJ1, cPrevPontosJ1);
-        CriaLabelPontosJ2(cTipo, cPontosJ2, cPrevPontosJ2);
+          LabelPontosJ1[High(LabelPontosJ1)].Parent := LytPontuacao[High(LytPontuacao)];
         CriaLabelXPontuacao(cTipo, cResultado, cProb1, cProb2);
+          LabelXPontuacao[High(LabelXPontuacao)].Parent :=  LytPontuacao[High(LytPontuacao)];
+        CriaLabelPontosJ2(cTipo, cPontosJ2, cPrevPontosJ2);
+          LabelPontosJ2[High(LabelPontosJ2)].Parent := LytPontuacao[High(LytPontuacao)];
       end;
 end;
 
@@ -538,7 +547,7 @@ begin
     with LabelPontosJ2[High(LabelPontosJ2)] do
       begin
         Parent          :=  LytPontuacao[High(LytPontuacao)]  ;
-        Align           :=  TAlignLayout.Left   ;
+        Align           :=  TAlignLayout.Right   ;
         if pTipo = 'P' then begin
           Text := pPrevPontosJ2;
         end else if pTipo = 'E' then begin
@@ -565,61 +574,69 @@ begin
   LabelXPontuacao[High(LabelXPontuacao)] := TLabel.Create(LytPontuacao[High(LytPontuacao)]);
     with LabelXPontuacao[High(LabelXPontuacao)] do
       begin
-        Parent          :=  LytPontuacao[High(LytPontuacao)]  ;
+        Parent          :=  LytPontuacao[High(LytPontuacao)];
         Align           :=  TAlignLayout.HorzCenter;
-        Text            := 'X';
+        Text            := '    X    ';
         TextSettings.FontColor := TColor($000000); // Black
         TextSettings.Font.Size := 18;
         TextSettings.HorzAlign := TTextAlign.Center;
-        Height                  := 33;
+        Height                 := 33;
+        AutoSize               := False;
         Visible         :=  true  ;
         Margins.Left    :=  0     ;
         Margins.Right   :=  0     ;
         Margins.Top     :=  0     ;
         Margins.Bottom  :=  0     ;
         CriaLabelSetsJ1(pTipo, pResultado, pProb1);
-        CriaLabelSetsJ2(pTipo, pResultado, pProb2);;
+          LabelSetsJ1[High(LabelSetsJ1)].Parent := LabelXPontuacao[High(LabelXPontuacao)];
+        CriaLabelSetsJ2(pTipo, pResultado, pProb2);
+         LabelSetsJ2[High(LabelSetsJ2)].Parent := LabelXPontuacao[High(LabelXPontuacao)];
       end;
 end;
 
 procedure TForm15.CriaLabelSetsJ1(pTipo: string; pResultado: string; pProb1: string);
+var
+texto1, texto2:string;
 begin
   LabelSetsJ1[High(LabelSetsJ1)] := TLabel.Create(LabelXPontuacao[High(LabelXPontuacao)]);
+  LabelSetsJ1[High(LabelSetsJ1)].Parent := LabelXPontuacao[High(LabelXPontuacao)];
     with LabelSetsJ1[High(LabelSetsJ1)] do
       begin
-        Parent          :=  LabelXPontuacao[High(LabelXPontuacao)]  ;
+       // Parent          :=  LabelXPontuacao[High(LabelXPontuacao)]  ;
         Align           :=  TAlignLayout.Left;
 
         if pTipo = 'E' then begin
-           Text            := copy(pResultado, 1, pos(':',pResultado)-1);
-           if strtoint(Text) > strtoint(copy(pResultado, pos(':',pResultado)+1)) then begin
+           texto1            := copy(pResultado, 1, pos(':',pResultado)-2);
+           texto2            := copy(pResultado, pos(':',pResultado)+2);
+           if strtoint(texto1) > strtoint(texto2) then begin
               TextSettings.FontColor := CorGreen;
-           end else if strtoint(Text) < strtoint(copy(pResultado, pos(':',pResultado)+1)) then begin
+           end else if strtoint(texto1) < strtoint(texto2) then begin
               TextSettings.FontColor := CorRed;
            end else begin
               TextSettings.FontColor := CorBlack;
            end;
 
         end else if pTipo = 'P' then begin
-           Text           := pProb1;
-           if strtoint(Text) > 50 then begin
+           texto1           := pProb1;
+           if strtoint(texto1) > 50 then begin
               TextSettings.FontColor := CorGreen;
-           end else if strtoint(Text) < 50 then begin
+           end else if strtoint(texto1) < 50 then begin
               TextSettings.FontColor := CorRed;
            end else begin
               TextSettings.FontColor := CorBlack;
            end;
-           Text := Text + '%';
+           texto1 := texto1 + '%';
         end else if pTipo = 'C' then begin
-           Text := '-';
+           texto1 := '-';
 
         end else begin
-           Text := '-';
+           texto1 := '-';
         end;
-
+        Text := texto1;
         TextSettings.Font.Size := 18;
         TextSettings.HorzAlign := TTextAlign.Center;
         Height                  := 33;
+        AutoSize        := False;
         Visible         :=  true  ;
         Margins.Left    :=  0     ;
         Margins.Right   :=  0     ;
@@ -629,18 +646,21 @@ begin
 end;
 
 procedure TForm15.CriaLabelSetsJ2(pTipo: string; pResultado: string; pProb2: string);
+var
+texto1, texto2:string;
 begin
   LabelSetsJ2[High(LabelSetsJ2)] := TLabel.Create(Self);
     with LabelSetsJ2[High(LabelSetsJ2)] do
       begin
         Parent          :=  Self  ;
-        Align           :=  TAlignLayout.Left;
+        Align           :=  TAlignLayout.Right;
 
         if pTipo = 'E' then begin
-           Text            := copy(pResultado, 1, pos(':',pResultado)-1);
-           if strtoint(Text) > strtoint(copy(pResultado, pos(':',pResultado)+1)) then begin
+           texto1            := copy(pResultado, 1, pos(':',pResultado)-2);
+           texto2            := copy(pResultado, pos(':',pResultado)+2);
+           if strtoint(texto2) > strtoint(texto1) then begin
               TextSettings.FontColor := CorGreen;
-           end else if strtoint(Text) < strtoint(copy(pResultado, pos(':',pResultado)+1)) then begin
+           end else if strtoint(texto2) < strtoint(texto1) then begin
               TextSettings.FontColor := CorRed;
            end else begin
               TextSettings.FontColor := CorBlack;
@@ -648,24 +668,25 @@ begin
 
         end else if pTipo = 'P' then begin
            Text           := pProb2;
-           if strtoint(Text) > 50 then begin
+           if strtoint(texto2) > 50 then begin
               TextSettings.FontColor := CorGreen;
            end else if strtoint(Text) < 50 then begin
               TextSettings.FontColor := CorRed;
            end else begin
               TextSettings.FontColor := CorBlack;
            end;
-           Text := Text + '%';
+           texto2 := texto2 + '%';
         end else if pTipo = 'C' then begin
-           Text := '-';
+           texto2 := '-';
 
         end else begin
-           Text := '-';
+           texto2 := '-';
         end;
-
+        Text := texto2;
         TextSettings.Font.Size := 18;
         TextSettings.HorzAlign := TTextAlign.Center;
         Height                  := 33;
+        AutoSize        := False;
         Visible         :=  true  ;
         Margins.Left    :=  0     ;
         Margins.Right   :=  0     ;
@@ -744,7 +765,7 @@ begin
     with LytSeparador[High(LytSeparador)] do
       begin
         Parent          :=  Jogos[High(Jogos)]  ;
-        Align           :=  TAlignLayout.Top  ;
+        Align           :=  TAlignLayout.MostBottom  ;
         Height          :=  8    ;
         Visible         :=  true  ;
         Margins.Left    :=  0     ;
@@ -752,6 +773,7 @@ begin
         Margins.Top     :=  0     ;
         Margins.Bottom  :=  0     ;
         CriaLabelSeparador        ;
+        LabelSeparador[High(LabelSeparador)].Parent := LytSeparador[High(LytSeparador)];
       end;
 end;
 
@@ -762,7 +784,9 @@ begin
       begin
         Parent          :=  LytSeparador[High(LytSeparador)]  ;
         Align           :=  TAlignLayout.Client   ;
+        AutoSize := false;
         Text            := '__________________________________________';
+        TextSettings.HorzAlign := TTextAlign.Center;
         TextSettings.FontColor := CorCinza;
         Visible         :=  true  ;
         Margins.Left    :=  0     ;
@@ -779,7 +803,7 @@ begin
   Jogos[High(Jogos)] := TLayout.Create(ltDadosJogos);
   with Jogos[High(Jogos)] do
     begin
-        Height          :=  105   ;
+        Height          :=  107   ;
         Visible         :=  true  ;
         Margins.Left    :=  0     ;
         Margins.Right   :=  0     ;
@@ -789,9 +813,13 @@ begin
         Enabled         := true   ;
 
         CriaLayoutJogadores(cJogador1,cJogador2);
+          LytJogadores[High(LytJogadores)].Parent := Jogos[High(Jogos)];
         CriaLayoutPontuacao(cTipo, cResultado, cPontosJ1, cPontosJ2, cProb1, cProb2, cPrevPontosJ1, cPrevPontosJ2);
+          LytPontuacao[High(LytPontuacao)].Parent := Jogos[High(Jogos)];
         CriaLayoutLiga(cTipo, cCompeticao, cDataJogo, cTotalPontos, cPrevTotalPontos);
+          LytLiga[High(LytLiga)].Parent := Jogos[High(Jogos)];
         CriaLayoutSeparador;
+          LytSeparador[High(LytSeparador)].Parent := Jogos[High(Jogos)];
         parent := ltDadosJogos;
     end;
 
@@ -1310,6 +1338,12 @@ begin
    TabControl3.ActiveTab := TabItem2;
 end;
 
+procedure TForm15.Button1Click(Sender: TObject);
+begin
+   ShowMessage(LabelXPontuacao[High(LabelXPontuacao)].Parent.Name + LabelPontosJ1[High(LabelPontosJ1)].Parent.Name);
+   ShowMessage(LabelXPontuacao[High(LabelXPontuacao)].Width+ ' | ' + inttostr(LabelXPontuacao[High(LabelXPontuacao)].Height));
+end;
+
 procedure TForm15.CarregaDados;
 var
 configIni :TIniFile;
@@ -1465,7 +1499,7 @@ begin
                 ProgressBar1.Position.X := Posicao;
                 //NUMSETS
                 dJogos.Text := copy(dJogos.Text, pos(NUMSETS, dJogos.Text)+10);
-                cTipo       := copy(dJogos.Text, 1, pos(s, dJogos.Text)-1);
+                cNumSets    := copy(dJogos.Text, 1, pos(s, dJogos.Text)-1);
                 Posicao     := Trunc(ProgressBar1.Max - Length(dJogos.Text));
                 ProgressBar1.Position.X := Posicao;
                 //PONTOSJ1
