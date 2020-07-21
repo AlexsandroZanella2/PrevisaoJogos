@@ -66,26 +66,7 @@ type
     procedure SetPrevPontosJ2   (Value:string);
     function  GetPrevTotalPontos      :string;
     procedure SetPrevTotalPontos(Value:string);
-{:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::}
-    procedure CriaLayoutJogadores   ;
-      procedure CriaLabelXJogadores ;
-        procedure CriaLabelJogador1 ;
-        procedure CriaLabelJogador2 ;
-{:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::}
-    procedure CriaLayoutPontuacao   ;
-      procedure CriaLabelPontosJ1   ;
-      procedure CriaLabelPontosJ2   ;
-      procedure CriaLabelXPontuacao ;
-        procedure CriaLabelSetsJ1   ;
-        procedure CriaLabelSetsJ2   ;
-{:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::}
-    procedure CriaLayoutLiga        ;
-      procedure CriaLabelCompeticao ;
-      procedure CriaLabelDataCompeticao;
-{:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::}
-    procedure CriaLayoutSeparador   ;
-      procedure CriaLabelSeparador  ;
-{:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::}
+
 
   protected
     { Protected declarations }
@@ -115,6 +96,28 @@ type
     const CorRed   = TColor($0000FF);
     const CorGreen = TColor($008000);
     const CorCinza = TColor($D3D3D3);
+
+    {:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::}
+    procedure CriaLayoutJogadores   ;
+      procedure CriaLabelXJogadores ;
+        procedure CriaLabelJogador1 ;
+        procedure CriaLabelJogador2 ;
+{:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::}
+    procedure CriaLayoutPontuacao   ;
+      procedure CriaLabelPontosJ1   ;
+      procedure CriaLabelPontosJ2   ;
+      procedure CriaLabelXPontuacao ;
+        procedure CriaLabelSetsJ1   ;
+        procedure CriaLabelSetsJ2   ;
+{:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::}
+    procedure CriaLayoutLiga        ;
+      procedure CriaLabelCompeticao ;
+      procedure CriaLabelDataCompeticao;
+{:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::}
+    procedure CriaLayoutSeparador   ;
+      procedure CriaLabelSeparador  ;
+{:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::}
+
     constructor Create(AOwner: TComponent); override;
     constructor CreateExec(cCodJogo, cCompeticao, cJogador1, cJogador2, cResultado,
                        cTipo, cDataJogo, cNumSets, cPontosJ1, cPontosJ2, cTotalPontos, cProb1, cProb2,
@@ -462,7 +465,7 @@ begin
            Text := Text + '%';
 
         end else if pTipo = 'P' then begin
-           Text           := pProb1;
+           Text           := pProb2;
            if strtoint(Text) > 50 then begin
               TextSettings.FontColor := corGreen;
            end else if strtoint(Text) < 50 then begin

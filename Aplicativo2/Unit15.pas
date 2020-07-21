@@ -14,8 +14,7 @@ uses
    FMX.Helpers.Android, Androidapi.Jni.GraphicsContentViewText, Androidapi.Jni.Net,
    Androidapi.Jni.JavaTypes, Androidapi.Helpers,
   {$ENDIF}
-   System.Net.HttpClient, System.Net.HttpClientComponent, UFormAbertura,
-  JogoTenis;
+   System.Net.HttpClient, System.Net.HttpClientComponent, UFormAbertura;
 
 type
   TForm15 = class(TForm)
@@ -174,12 +173,12 @@ type
     RoundRect6: TRoundRect;
     Label18: TLabel;
     JogoTenisTeste: TLayout;
-    LayoutJogadores: TLayout;
-    LabelX1: TLabel;
-    LayoutPontuacao: TLayout;
-    LabelSetsJ1: TLabel;
-    LabelX2: TLabel;
-    LabelSetsJ2: TLabel;
+    LayoutJogadoresteste: TLayout;
+    LabelX1teste: TLabel;
+    LayoutPontuacaoteste: TLayout;
+    LabelSetsJ1teste: TLabel;
+    LabelX2teste: TLabel;
+    LabelSetsJ2teste: TLabel;
     Layout57: TLayout;
     rrRegistrar: TRoundRect;
     lbRegistrar: TLabel;
@@ -222,17 +221,16 @@ type
     RESTResJogosPassados: TRESTResponse;
     RESTResJogosAtuais: TRESTResponse;
     RESTResJogosFuturos: TRESTResponse;
-    LabelJogador1: TLabel;
-    LabelJogador2: TLabel;
-    LabelPontosJ2: TLabel;
-    LabelPontosJ1: TLabel;
-    LayoutLiga: TLayout;
-    LabelCompeticao: TLabel;
-    LabelDataCompeticao: TLabel;
-    LayoutSeparador: TLayout;
-    LabelSeparador: TLabel;
+    LabelJogador1teste: TLabel;
+    LabelJogador2teste: TLabel;
+    LabelPontosJ2teste: TLabel;
+    LabelPontosJ1teste: TLabel;
+    LayoutLigateste: TLayout;
+    LabelCompeticaoteste: TLabel;
+    LabelDataCompeticaotyeste: TLabel;
+    LayoutSeparadorteste: TLayout;
+    LabelSeparadorteste: TLabel;
     ProgressBar1: TProgressBar;
-    JogoTenis1: TJogoTenis;
     procedure FormCreate(Sender: TObject);
     procedure DateEdit1Change(Sender: TObject);
     procedure CarregaDados;
@@ -274,6 +272,28 @@ type
     procedure Label27Click(Sender: TObject);
     procedure VertScrollBox2Click(Sender: TObject);
     procedure SpeedButton7Click(Sender: TObject);
+    procedure CriaLayoutJogo(cCodJogo, cCompeticao, cJogador1, cJogador2, cResultado,
+                             cTipo, cDataJogo, cNumSets, cPontosJ1, cPontosJ2, cTotalPontos, cProb1, cProb2,
+                             cPrevNumSets, cPrevPontosJ1, cPrevPontosJ2, cPrevTotalPontos:string);
+    procedure CriaLayoutJogadores(cJogador1,cJogador2:string);
+      procedure CriaLabelXJogadores(cJogador1,cJogador2:string) ;
+        procedure CriaLabelJogador1(cJogador1:string) ;
+        procedure CriaLabelJogador2(cJogador2:string) ;
+
+    procedure CriaLayoutPontuacao(cTipo, cResultado, cPontosJ1, cPontosJ2, cProb1, cProb2, cPrevPontosJ1, cPrevPontosJ2:string);
+      procedure CriaLabelPontosJ1(pTipo, pPontosJ1, pPrevPontosJ1:string)   ;
+      procedure CriaLabelPontosJ2(pTipo, pPontosJ2, pPrevPontosJ2:string)   ;
+      procedure CriaLabelXPontuacao(pTipo, pResultado,pProb1, pProb2:string)   ;
+        procedure CriaLabelSetsJ1(pTipo, pResultado,pProb1:string)   ;
+        procedure CriaLabelSetsJ2(pTipo, pResultado,pProb2:string)   ;
+
+
+    procedure CriaLayoutLiga(cTipo, cCompeticao, cDataJogo, cTotalPontos, cPrevTotalPontos:string);
+      procedure CriaLabelCompeticao(cTipo, cCompeticao, cDataJogo, cTotalPontos, cPrevTotalPontos:string) ;
+        procedure CriaLabelDataCompeticao(cDataJogo:string);
+
+    procedure CriaLayoutSeparador;
+      procedure CriaLabelSeparador;
 
   private
     { Private declarations }
@@ -282,23 +302,36 @@ type
   end;
 
 var
-  Form15: TForm15;
-  logOK: boolean;
-  usuario: string;
-  senha: string;
-  dtNascimento:string;
-  filtroProbs: string;
-  email: string;
-  cpf:string;
-  Config:tiniFile;
-  dataPermissao:string;
-  Jogos               : Array of TLayout;
-  LytJogadores : array of TLayout;
-    LabelXJogadores : array of TLabel;
+  Form15                  : TForm15           ;
+  logOK                   : boolean           ;
+  usuario                 : string            ;
+  senha                   : string            ;
+  dtNascimento            : string            ;
+  filtroProbs             : string            ;
+  email                   : string            ;
+  cpf                     : string            ;
+  Config                  : tiniFile          ;
+  dataPermissao           : string            ;
 
-  LytPontuacao : ARRAY OF TLayout;
-  LytLiga      : array of TLayout;
-  LytSeparador : array of TLayout;
+  Jogos                   : Array of TLayout  ;
+    LytJogadores          : array of TLayout  ;
+      LabelXJogadores     : array of TLabel   ;
+        LabelJogador1     : array of TLabel   ;
+        LabelJogador2     : array of TLabel   ;
+
+    LytPontuacao          : ARRAY OF TLayout  ;
+      LabelPontosJ1       : array of TLabel   ;
+      LabelPontosJ2       : array of TLabel   ;
+      LabelXPontuacao     : array of TLabel   ;
+        LabelSetsJ1       : array of TLabel   ;
+        LabelSetsJ2       : array of TLabel   ;
+
+    LytLiga               : array of TLayout  ;
+      LabelCompeticao     : array of TLabel   ;
+      LabelDataCompeticao : array of TLabel   ;
+
+    LytSeparador          : array of TLayout  ;
+      LabelSeparador      : array of TLabel   ;
 
 const linkServer          = 'http://botstenisdemesa.ddns.net:8080/';
 
@@ -317,22 +350,27 @@ const lsJogosFuturos      = 'http://botstenisdemesa.ddns.net:8080/GetListaJogosF
 const lsJogosAtuais       = 'http://botstenisdemesa.ddns.net:8080/GetListaJogosAtuais/';
                          //usuario/senha/probs
 
-const CODIGO = 'CODIGO';
-CONST COMPETICAO = 'COMPETICAO';
-const JOGADORES = 'JOGADORES';
-const RESULTADO = 'RESULTADO';
-const DATAJOGO = 'DATAJOGO';
-const TIPO = 'TIPO';
-const NUMSETS = 'NUMSETS';
-const PONTOSJ1 = 'PONTOSJ1';
-const PONTOSJ2 = 'PONTOSJ2';
-const TOTALPONTOS = 'TOTALPONTOS';
-const PROB1 = 'PROB1';
-const PROB2 = 'PROB2';
-const PREVNUMSETS = 'PREVNUMSETS';
-const PREVPONTOSJ1 = 'PREVPONTOSJ1';
-const PREVPONTOSJ2 = 'PREVPONTOSJ2';
-const PREVTOTALPONTOS = 'PREVTOTALPONTOS';
+const CODIGO          = 'CODIGO'          ;
+CONST COMPETICAO      = 'COMPETICAO'      ;
+const JOGADORES       = 'JOGADORES'       ;
+const RESULTADO       = 'RESULTADO'       ;
+const DATAJOGO        = 'DATAJOGO'        ;
+const TIPO            = 'TIPO'            ;
+const NUMSETS         = 'NUMSETS'         ;
+const PONTOSJ1        = 'PONTOSJ1'        ;
+const PONTOSJ2        = 'PONTOSJ2'        ;
+const TOTALPONTOS     = 'TOTALPONTOS'     ;
+const PROB1           = 'PROB1'           ;
+const PROB2           = 'PROB2'           ;
+const PREVNUMSETS     = 'PREVNUMSETS'     ;
+const PREVPONTOSJ1    = 'PREVPONTOSJ1'    ;
+const PREVPONTOSJ2    = 'PREVPONTOSJ2'    ;
+const PREVTOTALPONTOS = 'PREVTOTALPONTOS' ;
+
+const CorBlack        = TColor($000000)   ;
+const CorRed          = TColor($0000FF)   ;
+const CorGreen        = TColor($008000)   ;
+const CorCinza        = TColor($D3D3D3)   ;
 
 implementation
 
@@ -343,20 +381,447 @@ var
 cont: Integer;
 begin
   for Cont := Low(Jogos) to High(Jogos) do begin
-    FreeAndNil(Jogos[Cont]);
+    FreeAndNil(Jogos[Cont])               ;
+    FreeAndNil(LytJogadores[Cont])        ;
+    FreeAndNil(LabelXJogadores[Cont])     ;
+    FreeAndNil(LabelJogador1[Cont])       ;
+    FreeAndNil(LabelJogador2[Cont])       ;
+    FreeAndNil(LytPontuacao[Cont])        ;
+    FreeAndNil(LabelPontosJ1[Cont])       ;
+    FreeAndNil(LabelPontosJ2[Cont])       ;
+    FreeAndNil(LabelXPontuacao[Cont])     ;
+    FreeAndNil(LabelSetsJ1[Cont])         ;
+    FreeAndNil(LabelSetsJ2[Cont])         ;
+    FreeAndNil(LytLiga[Cont])             ;
+    FreeAndNil(LabelCompeticao[Cont])     ;
+    FreeAndNil(LabelDataCompeticao[Cont]) ;
+    FreeAndNil(LytSeparador[Cont])        ;
+    FreeAndNil(LabelSeparador[Cont])      ;
   end;
+
+end;
+
+{:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::}
+
+procedure TForm15.CriaLayoutJogadores(cJogador1,cJogador2:string);
+begin
+  LytJogadores[High(LytJogadores)] := TLayout.Create(Jogos[High(Jogos)]);
+    with LytJogadores[High(LytJogadores)] do
+      begin
+        Parent          :=  Jogos[High(Jogos)]  ;
+        Align           :=  TAlignLayout.Top   ;
+        Height          :=  33    ;
+        Visible         :=  true  ;
+        Margins.Left    :=  0     ;
+        Margins.Right   :=  0     ;
+        Margins.Top     :=  0     ;
+        Margins.Bottom  :=  0     ;
+
+        CriaLabelXJogadores(cJogador1,cJogador2);
+      end;
+end;
+
+procedure TForm15.CriaLabelXJogadores(cJogador1: string; cJogador2: string);
+begin
+  LabelXJogadores[High(LabelXJogadores)] := TLabel.Create(LytJogadores[High(LytJogadores)]);
+    with LabelXJogadores[High(LabelXJogadores)] do
+      begin
+        Parent          :=  LytJogadores[High(LytJogadores)]  ;
+        Align           :=  TAlignLayout.Client;
+        Text            := 'X';
+        TextSettings.Font.Size := 18;
+        TextSettings.FontColor := TColor($000000);
+        TextSettings.HorzAlign := TTextAlign.Center;
+        TextSettings.VertAlign := TTextAlign.Center;
+        Visible         :=  True  ;
+        Margins.Left    :=  0     ;
+        Margins.Right   :=  0     ;
+        Margins.Top     :=  0     ;
+        Margins.Bottom  :=  0     ;
+        CriaLabelJogador1(cJogador1);
+        CriaLabelJogador2(cJogador2);
+      end;
+end;
+
+procedure TForm15.CriaLabelJogador1(cJogador1: string);
+begin
+  LabelJogador1[High(LabelJogador1)] := TLabel.Create(LabelXJogadores[High(LabelXJogadores)]);
+    with LabelJogador1[High(LabelJogador1)] do
+      begin
+        Parent          :=  LabelXJogadores[High(LabelXJogadores)]  ;
+        Align           :=  TAlignLayout.Left;
+        Text            := cJogador1;
+        TextSettings.Font.Size := 18;
+        TextSettings.FontColor := TColor($000000); // Black
+        TextSettings.HorzAlign := TTextAlign.Trailing;
+        TextSettings.VertAlign := TTextAlign.Center;
+        Visible         :=  True  ;
+        Margins.Left    :=  0     ;
+        Margins.Right   :=  0     ;
+        Margins.Top     :=  0     ;
+        Margins.Bottom  :=  0     ;
+      end;
+end;
+
+procedure TForm15.CriaLabelJogador2(cJogador2: string);
+begin
+  LabelJogador2[High(LabelJogador2)] := TLabel.Create(LabelXJogadores[High(LabelXJogadores)]);
+    with LabelJogador2[High(LabelJogador2)] do
+      begin
+        Parent          :=  LabelXJogadores[High(LabelXJogadores)]  ;
+        Align           :=  TAlignLayout.Left;
+        Text            := cJogador2;
+        TextSettings.Font.Size := 18;
+        TextSettings.FontColor := TColor($000000); // Black
+        TextSettings.HorzAlign := TTextAlign.Leading;
+        TextSettings.VertAlign := TTextAlign.Center;
+        Visible         :=  True  ;
+        Margins.Left    :=  0     ;
+        Margins.Right   :=  0     ;
+        Margins.Top     :=  0     ;
+        Margins.Bottom  :=  0     ;
+      end;
+end;
+
+{:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::}
+
+procedure TForm15.CriaLayoutPontuacao(cTipo, cResultado, cPontosJ1, cPontosJ2, cProb1, cProb2, cPrevPontosJ1, cPrevPontosJ2:string);
+begin
+  LytPontuacao[High(LytPontuacao)] := TLayout.Create(Jogos[High(Jogos)]);
+    with LytPontuacao[High(LytPontuacao)] do
+      begin
+        Parent          :=  Jogos[High(Jogos)]  ;
+        Align           :=  TAlignLayout.Top   ;
+        Height          :=  33    ;
+        Visible         :=  true  ;
+        Margins.Left    :=  0     ;
+        Margins.Right   :=  0     ;
+        Margins.Top     :=  0     ;
+        Margins.Bottom  :=  0     ;
+        CriaLabelPontosJ1(cTipo, cPontosJ1, cPrevPontosJ1);
+        CriaLabelPontosJ2(cTipo, cPontosJ2, cPrevPontosJ2);
+        CriaLabelXPontuacao(cTipo, cResultado, cProb1, cProb2);
+      end;
+end;
+
+procedure TForm15.CriaLabelPontosJ1(pTipo: string; pPontosJ1: string; pPrevPontosJ1: string);
+begin
+  LabelPontosJ1[High(LabelPontosJ1)] := TLabel.Create(LytPontuacao[High(LytPontuacao)]);
+    with LabelPontosJ1[High(LabelPontosJ1)] do
+      begin
+        Parent          :=  LytPontuacao[High(LytPontuacao)]  ;
+        Align           :=  TAlignLayout.Left   ;
+        if pTipo = 'P' then begin
+          Text := pPrevPontosJ1;
+        end else if pTipo = 'E' then begin
+          Text := pPontosJ1;
+        end else if pTipo = 'C' then begin
+          Text := '-';
+        end else begin
+          Text := '-';
+        end;
+        TextSettings.FontColor := TColor($000000); // Black
+        TextSettings.Font.Size := 18;
+        TextSettings.HorzAlign := TTextAlign.Leading;
+        Width                  := 82;
+        Visible         :=  true  ;
+        Margins.Left    :=  0     ;
+        Margins.Right   :=  0     ;
+        Margins.Top     :=  0     ;
+        Margins.Bottom  :=  0     ;
+      end;
+end;
+
+procedure TForm15.CriaLabelPontosJ2(pTipo: string; pPontosJ2: string; pPrevPontosJ2: string);
+begin
+  LabelPontosJ2[High(LabelPontosJ2)] := TLabel.Create(LytPontuacao[High(LytPontuacao)]);
+    with LabelPontosJ2[High(LabelPontosJ2)] do
+      begin
+        Parent          :=  LytPontuacao[High(LytPontuacao)]  ;
+        Align           :=  TAlignLayout.Left   ;
+        if pTipo = 'P' then begin
+          Text := pPrevPontosJ2;
+        end else if pTipo = 'E' then begin
+          Text := pPontosJ2;
+        end else if pTipo = 'C' then begin
+          Text := '-';
+        end else begin
+          Text := '-';
+        end;
+        TextSettings.FontColor := TColor($000000); // Black
+        TextSettings.Font.Size := 18;
+        TextSettings.HorzAlign := TTextAlign.Trailing;
+        Width                  := 82;
+        Visible         :=  true  ;
+        Margins.Left    :=  0     ;
+        Margins.Right   :=  0     ;
+        Margins.Top     :=  0     ;
+        Margins.Bottom  :=  0     ;
+      end;
+end;
+
+procedure TForm15.CriaLabelXPontuacao(pTipo: string; pResultado: string; pProb1: string; pProb2: string);
+begin
+  LabelXPontuacao[High(LabelXPontuacao)] := TLabel.Create(LytPontuacao[High(LytPontuacao)]);
+    with LabelXPontuacao[High(LabelXPontuacao)] do
+      begin
+        Parent          :=  LytPontuacao[High(LytPontuacao)]  ;
+        Align           :=  TAlignLayout.HorzCenter;
+        Text            := 'X';
+        TextSettings.FontColor := TColor($000000); // Black
+        TextSettings.Font.Size := 18;
+        TextSettings.HorzAlign := TTextAlign.Center;
+        Height                  := 33;
+        Visible         :=  true  ;
+        Margins.Left    :=  0     ;
+        Margins.Right   :=  0     ;
+        Margins.Top     :=  0     ;
+        Margins.Bottom  :=  0     ;
+        CriaLabelSetsJ1(pTipo, pResultado, pProb1);
+        CriaLabelSetsJ2(pTipo, pResultado, pProb2);;
+      end;
+end;
+
+procedure TForm15.CriaLabelSetsJ1(pTipo: string; pResultado: string; pProb1: string);
+begin
+  LabelSetsJ1[High(LabelSetsJ1)] := TLabel.Create(LabelXPontuacao[High(LabelXPontuacao)]);
+    with LabelSetsJ1[High(LabelSetsJ1)] do
+      begin
+        Parent          :=  LabelXPontuacao[High(LabelXPontuacao)]  ;
+        Align           :=  TAlignLayout.Left;
+
+        if pTipo = 'E' then begin
+           Text            := copy(pResultado, 1, pos(':',pResultado)-1);
+           if strtoint(Text) > strtoint(copy(pResultado, pos(':',pResultado)+1)) then begin
+              TextSettings.FontColor := CorGreen;
+           end else if strtoint(Text) < strtoint(copy(pResultado, pos(':',pResultado)+1)) then begin
+              TextSettings.FontColor := CorRed;
+           end else begin
+              TextSettings.FontColor := CorBlack;
+           end;
+
+        end else if pTipo = 'P' then begin
+           Text           := pProb1;
+           if strtoint(Text) > 50 then begin
+              TextSettings.FontColor := CorGreen;
+           end else if strtoint(Text) < 50 then begin
+              TextSettings.FontColor := CorRed;
+           end else begin
+              TextSettings.FontColor := CorBlack;
+           end;
+           Text := Text + '%';
+        end else if pTipo = 'C' then begin
+           Text := '-';
+
+        end else begin
+           Text := '-';
+        end;
+
+        TextSettings.Font.Size := 18;
+        TextSettings.HorzAlign := TTextAlign.Center;
+        Height                  := 33;
+        Visible         :=  true  ;
+        Margins.Left    :=  0     ;
+        Margins.Right   :=  0     ;
+        Margins.Top     :=  0     ;
+        Margins.Bottom  :=  0     ;
+      end;
+end;
+
+procedure TForm15.CriaLabelSetsJ2(pTipo: string; pResultado: string; pProb2: string);
+begin
+  LabelSetsJ2[High(LabelSetsJ2)] := TLabel.Create(Self);
+    with LabelSetsJ2[High(LabelSetsJ2)] do
+      begin
+        Parent          :=  Self  ;
+        Align           :=  TAlignLayout.Left;
+
+        if pTipo = 'E' then begin
+           Text            := copy(pResultado, 1, pos(':',pResultado)-1);
+           if strtoint(Text) > strtoint(copy(pResultado, pos(':',pResultado)+1)) then begin
+              TextSettings.FontColor := CorGreen;
+           end else if strtoint(Text) < strtoint(copy(pResultado, pos(':',pResultado)+1)) then begin
+              TextSettings.FontColor := CorRed;
+           end else begin
+              TextSettings.FontColor := CorBlack;
+           end;
+
+        end else if pTipo = 'P' then begin
+           Text           := pProb2;
+           if strtoint(Text) > 50 then begin
+              TextSettings.FontColor := CorGreen;
+           end else if strtoint(Text) < 50 then begin
+              TextSettings.FontColor := CorRed;
+           end else begin
+              TextSettings.FontColor := CorBlack;
+           end;
+           Text := Text + '%';
+        end else if pTipo = 'C' then begin
+           Text := '-';
+
+        end else begin
+           Text := '-';
+        end;
+
+        TextSettings.Font.Size := 18;
+        TextSettings.HorzAlign := TTextAlign.Center;
+        Height                  := 33;
+        Visible         :=  true  ;
+        Margins.Left    :=  0     ;
+        Margins.Right   :=  0     ;
+        Margins.Top     :=  0     ;
+        Margins.Bottom  :=  0     ;
+      end;
+end;
+
+{:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::}
+
+procedure TForm15.CriaLayoutLiga(cTipo: string; cCompeticao: string; cDataJogo, cTotalPontos, cPrevTotalPontos: string);
+begin
+  LytLiga[High(LytLiga)] := TLayout.Create(Jogos[High(Jogos)]);
+    with LytLiga[High(LytLiga)] do
+      begin
+        Parent          :=  Jogos[High(Jogos)]  ;
+        Align           :=  TAlignLayout.Top   ;
+        Height          :=  33    ;
+        Visible         :=  true  ;
+        Margins.Left    :=  0     ;
+        Margins.Right   :=  0     ;
+        Margins.Top     :=  0     ;
+        Margins.Bottom  :=  0     ;
+        CriaLabelCompeticao(cTipo, cCompeticao, cDataJogo, cTotalPontos, cPrevTotalPontos);
+      end;
+end;
+
+procedure TForm15.CriaLabelCompeticao(cTipo: string; cCompeticao: string; cDataJogo,cTotalPontos,cPrevTotalPontos: string);
+begin
+  LabelCompeticao[High(LabelCompeticao)] := TLabel.Create(LytLiga[High(LytLiga)]);
+    with LabelCompeticao[High(LabelCompeticao)] do
+      begin
+        Parent          :=  LytLiga[High(LytLiga)]  ;
+        Align           :=  TAlignLayout.Client   ;
+        if cTipo = 'P' then begin
+        Text            := cCompeticao + ' - ' + cPrevTotalPontos;
+        end else if ctipo = 'E' then begin
+          Text := cCompeticao + ' - ' + cTotalPontos;
+        end else if Tipo = 'C' then begin
+          Text := cCompeticao + ' - Cancelado';
+        end;
+        TextSettings.FontColor := corBlack;
+        TextSettings.Font.Size := 14;
+        Visible         :=  true  ;
+        Margins.Left    :=  0     ;
+        Margins.Right   :=  0     ;
+        Margins.Top     :=  0     ;
+        Margins.Bottom  :=  0     ;
+        CriaLabelDataCompeticao(cDataJogo)   ;
+      end;
+end;
+
+procedure TForm15.CriaLabelDataCompeticao(cDataJogo: string);
+begin
+  LabelDataCompeticao[High(LabelDataCompeticao)] := TLabel.Create(LabelCompeticao[High(LabelCompeticao)]);
+    with LabelDataCompeticao[High(LabelDataCompeticao)] do
+      begin
+        Parent          :=  LabelCompeticao[High(LabelCompeticao)];
+        Align           :=  TAlignLayout.Right    ;
+        Text            := cDataJogo              ;
+        TextSettings.FontColor := corBlack         ;
+        TextSettings.Font.Size := 14              ;
+        Visible         :=  true                  ;
+        Margins.Left    :=  0                     ;
+        Margins.Right   :=  0                     ;
+        Margins.Top     :=  0                     ;
+        Margins.Bottom  :=  0                     ;
+      end;
+end;
+
+{:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::}
+
+procedure TForm15.CriaLayoutSeparador;
+begin
+  LytSeparador[High(LytSeparador)] := TLayout.Create(Jogos[High(Jogos)]);
+    with LytSeparador[High(LytSeparador)] do
+      begin
+        Parent          :=  Jogos[High(Jogos)]  ;
+        Align           :=  TAlignLayout.Top  ;
+        Height          :=  8    ;
+        Visible         :=  true  ;
+        Margins.Left    :=  0     ;
+        Margins.Right   :=  0     ;
+        Margins.Top     :=  0     ;
+        Margins.Bottom  :=  0     ;
+        CriaLabelSeparador        ;
+      end;
+end;
+
+procedure TForm15.CriaLabelSeparador;
+begin
+  LabelSeparador[High(LabelSeparador)] := TLabel.Create(LytSeparador[High(LytSeparador)]);
+    with LabelSeparador[High(LabelSeparador)] do
+      begin
+        Parent          :=  LytSeparador[High(LytSeparador)]  ;
+        Align           :=  TAlignLayout.Client   ;
+        Text            := '__________________________________________';
+        TextSettings.FontColor := CorCinza;
+        Visible         :=  true  ;
+        Margins.Left    :=  0     ;
+        Margins.Right   :=  0     ;
+        Margins.Top     :=  0     ;
+        Margins.Bottom  :=  0     ;
+      end;
+end;
+
+procedure TForm15.CriaLayoutJogo(cCodJogo, cCompeticao, cJogador1, cJogador2, cResultado,
+                       cTipo, cDataJogo, cNumSets, cPontosJ1, cPontosJ2, cTotalPontos, cProb1, cProb2,
+                       cPrevNumSets, cPrevPontosJ1, cPrevPontosJ2, cPrevTotalPontos:string);
+begin
+  Jogos[High(Jogos)] := TLayout.Create(ltDadosJogos);
+  with Jogos[High(Jogos)] do
+    begin
+        Height          :=  105   ;
+        Visible         :=  true  ;
+        Margins.Left    :=  0     ;
+        Margins.Right   :=  0     ;
+        Margins.Top     :=  0     ;
+        Margins.Bottom  :=  0     ;
+        Align := TAlignLayout.Top ;
+        Enabled         := true   ;
+
+        CriaLayoutJogadores(cJogador1,cJogador2);
+        CriaLayoutPontuacao(cTipo, cResultado, cPontosJ1, cPontosJ2, cProb1, cProb2, cPrevPontosJ1, cPrevPontosJ2);
+        CriaLayoutLiga(cTipo, cCompeticao, cDataJogo, cTotalPontos, cPrevTotalPontos);
+        CriaLayoutSeparador;
+        parent := ltDadosJogos;
+    end;
 
 end;
 
 procedure TForm15.CriaJogo(cCodJogo: string; cCompeticao: string; cJogador1: string; cJogador2: string; cResultado: string; cTipo: string; cDataJogo: string; cNumSets: string; cPontosJ1: string; cPontosJ2: string; cTotalPontos: string; cProb1: string; cProb2: string; cPrevNumSets: string; cPrevPontosJ1: string; cPrevPontosJ2: string; cPrevTotalPontos: string);
 begin
-  SetLength(Jogos, High(Jogos) + 2);
+  SetLength(Jogos               , High(Jogos                ) + 2);
+  SetLength(LytJogadores        , High(LytJogadores         ) + 2);
+  SetLength(LabelXJogadores     , High(LabelXJogadores      ) + 2);
+  SetLength(LabelJogador1       , High(LabelJogador1        ) + 2);
+  SetLength(LabelJogador2       , High(LabelJogador2        ) + 2);
+  SetLength(LytPontuacao        , High(LytPontuacao         ) + 2);
+  SetLength(LabelPontosJ1       , High(LabelPontosJ1        ) + 2);
+  SetLength(LabelPontosJ2       , High(LabelPontosJ2        ) + 2);
+  SetLength(LabelXPontuacao     , High(LabelXPontuacao      ) + 2);
+  SetLength(LabelSetsJ1         , High(LabelSetsJ1          ) + 2);
+  SetLength(LabelSetsJ2         , High(LabelSetsJ2          ) + 2);
+  SetLength(LytLiga             , High(LytLiga              ) + 2);
+  SetLength(LabelCompeticao     , High(LabelCompeticao      ) + 2);
+  SetLength(LabelDataCompeticao , High(LabelDataCompeticao  ) + 2);
+  SetLength(LytSeparador        , High(LytSeparador         ) + 2);
+  SetLength(LabelSeparador      , High(LabelSeparador       ) + 2);
+
     TRY
-      Jogos[High(Jogos)] := TJogoTenis.CreateExec(cCodJogo, cCompeticao, cJogador1, cJogador2, cResultado,
+      CriaLayoutJogo(cCodJogo, cCompeticao, cJogador1, cJogador2, cResultado,
                        cTipo, cDataJogo, cNumSets, cPontosJ1, cPontosJ2, cTotalPontos, cProb1, cProb2,
-                       cPrevNumSets, cPrevPontosJ1, cPrevPontosJ2, cPrevTotalPontos, ltDadosJogos);
-                       Jogos[High(Jogos)].Parent := ltDadosJogos;
-                       ShowMessage(Jogos[High(Jogos)].Parent.Name + ' | ' + ltDadosJogos.Visible.ToString());
+                       cPrevNumSets, cPrevPontosJ1, cPrevPontosJ2, cPrevTotalPontos);
+      ltDadosJogos.Height := (Jogos[High(Jogos)].Height * High(Jogos));
+
     except
       showmessage('Erro ao criar TJogoTenis');
     END;
