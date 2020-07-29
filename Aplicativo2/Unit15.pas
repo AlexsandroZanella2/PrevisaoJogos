@@ -99,10 +99,6 @@ type
     Layout45: TLayout;
     Layout46: TLayout;
     DUserSenha: TEdit;
-    SpeedButton2: TSpeedButton;
-    SpeedButton7: TSpeedButton;
-    SpeedButton8: TSpeedButton;
-    SpeedButton9: TSpeedButton;
     TabItem2: TTabItem;
     ToolBar2: TToolBar;
     SpeedButton10: TSpeedButton;
@@ -166,7 +162,6 @@ type
     CheckBox6: TCheckBox;
     Layout50: TLayout;
     Layout52: TLayout;
-    SpeedButton14: TSpeedButton;
     Label16: TLabel;
     Label17: TLabel;
     Layout53: TLayout;
@@ -194,7 +189,6 @@ type
     RESTJogosAtuais: TRESTClient;
     RESTReqLogin: TRESTRequest;
     RESTResLogin: TRESTResponse;
-    SpeedButton15: TSpeedButton;
     Layout59: TLayout;
     RoundRect7: TRoundRect;
     Label23: TLabel;
@@ -231,7 +225,33 @@ type
     LayoutSeparadorteste: TLayout;
     LabelSeparadorteste: TLabel;
     ProgressBar1: TProgressBar;
-    Button1: TButton;
+    Rectangletest: TRectangle;
+    Label19: TLabel;
+    Label20: TLabel;
+    Layout54: TLayout;
+    Label21: TLabel;
+    Label22: TLabel;
+    Image8: TImage;
+    Edit3: TEdit;
+    Label24: TLabel;
+    Label28: TLabel;
+    Layout55: TLayout;
+    Image9: TImage;
+    Image10: TImage;
+    Image11: TImage;
+    Image12: TImage;
+    Image13: TImage;
+    Image14: TImage;
+    ImageList1: TImageList;
+    Layout56: TLayout;
+    SpeedButton2: TSpeedButton;
+    SpeedButton9: TSpeedButton;
+    SpeedButton7: TSpeedButton;
+    SpeedButton8: TSpeedButton;
+    SpeedButton14: TSpeedButton;
+    SpeedButton15: TSpeedButton;
+    Layout63: TLayout;
+    Label29: TLabel;
     procedure FormCreate(Sender: TObject);
     procedure DateEdit1Change(Sender: TObject);
     procedure CarregaDados;
@@ -288,7 +308,6 @@ type
         procedure CriaLabelSetsJ1(pTipo, pResultado,pProb1:string)   ;
         procedure CriaLabelSetsJ2(pTipo, pResultado,pProb2:string)   ;
 
-
     procedure CriaLayoutLiga(cTipo, cCompeticao, cDataJogo, cTotalPontos, cPrevTotalPontos:string);
       procedure CriaLabelCompeticao(cTipo, cCompeticao, cDataJogo, cTotalPontos, cPrevTotalPontos:string) ;
         procedure CriaLabelDataCompeticao(cDataJogo:string);
@@ -296,6 +315,7 @@ type
     procedure CriaLayoutSeparador;
       procedure CriaLabelSeparador;
     procedure Button1Click(Sender: TObject);
+    procedure Label12Click(Sender: TObject);
 
   private
     { Private declarations }
@@ -315,7 +335,7 @@ var
   Config                  : tiniFile          ;
   dataPermissao           : string            ;
 
-  Jogos                   : Array of TLayout  ;
+  Jogos                   : Array of TRectangle  ;
     LytJogadores          : array of TLayout  ;
       LabelXJogadores     : array of TLabel   ;
         LabelJogador1     : array of TLabel   ;
@@ -334,6 +354,7 @@ var
 
     LytSeparador          : array of TLayout  ;
       LabelSeparador      : array of TLabel   ;
+    hCor:TColor;
 
 const linkServer          = 'http://botstenisdemesa.ddns.net:8080/';
 
@@ -351,6 +372,9 @@ const lsJogosFuturos      = 'http://botstenisdemesa.ddns.net:8080/GetListaJogosF
                          //usuario/senha/probs
 const lsJogosAtuais       = 'http://botstenisdemesa.ddns.net:8080/GetListaJogosAtuais/';
                          //usuario/senha/probs
+
+const lsValidarAssinatura = 'http://botstenisdemesa.ddns.net:8080/GetValidaAssinatura/';
+                         //usuario/senha/chave
 
 const CODIGO          = 'CODIGO'          ;
 CONST COMPETICAO      = 'COMPETICAO'      ;
@@ -382,9 +406,10 @@ procedure TForm15.DestroyJogos;
 var
 cont: Integer;
 begin
+  hCor:= TColor($F9FCFF);
   for Cont := Low(Jogos) to High(Jogos) do begin
     FreeAndNil(Jogos[Cont])               ;
-    FreeAndNil(LytJogadores[Cont])        ;
+   { FreeAndNil(LytJogadores[Cont])        ;
     FreeAndNil(LabelXJogadores[Cont])     ;
     FreeAndNil(LabelJogador1[Cont])       ;
     FreeAndNil(LabelJogador2[Cont])       ;
@@ -398,8 +423,24 @@ begin
     FreeAndNil(LabelCompeticao[Cont])     ;
     FreeAndNil(LabelDataCompeticao[Cont]) ;
     FreeAndNil(LytSeparador[Cont])        ;
-    FreeAndNil(LabelSeparador[Cont])      ;
+    FreeAndNil(LabelSeparador[Cont])      ; }
   end;
+  SetLength(Jogos               , 0);
+  SetLength(LytJogadores        , 0);
+  SetLength(LabelXJogadores     , 0);
+  SetLength(LabelJogador1       , 0);
+  SetLength(LabelJogador2       , 0);
+  SetLength(LytPontuacao        , 0);
+  SetLength(LabelPontosJ1       , 0);
+  SetLength(LabelPontosJ2       , 0);
+  SetLength(LabelXPontuacao     , 0);
+  SetLength(LabelSetsJ1         , 0);
+  SetLength(LabelSetsJ2         , 0);
+  SetLength(LytLiga             , 0);
+  SetLength(LabelCompeticao     , 0);
+  SetLength(LabelDataCompeticao , 0);
+  SetLength(LytSeparador        , 0);
+  SetLength(LabelSeparador      , 0);
 
 end;
 
@@ -411,7 +452,7 @@ begin
     with LytJogadores[High(LytJogadores)] do
       begin
         Parent          :=  Jogos[High(Jogos)]  ;
-        Align           :=  TAlignLayout.Top   ;
+        Align           :=  TAlignLayout.MostTop   ;
         Height          :=  33    ;
         Visible         :=  true  ;
         Margins.Left    :=  0     ;
@@ -430,7 +471,7 @@ begin
       begin
         Parent          :=  LytJogadores[High(LytJogadores)]  ;
         Align           :=  TAlignLayout.Client;
-        Text            := 'X';
+        Text            := cJogador1 + '/' + cJogador2;
         TextSettings.Font.Size := 18;
         TextSettings.FontColor := TColor($000000);
         TextSettings.HorzAlign := TTextAlign.Center;
@@ -440,8 +481,8 @@ begin
         Margins.Right   :=  0     ;
         Margins.Top     :=  0     ;
         Margins.Bottom  :=  0     ;
-        CriaLabelJogador1(cJogador1);
-        CriaLabelJogador2(cJogador2);
+        //CriaLabelJogador1(cJogador1);
+        //CriaLabelJogador2(cJogador2);
       end;
 end;
 
@@ -533,6 +574,7 @@ begin
         TextSettings.Font.Size := 18;
         TextSettings.HorzAlign := TTextAlign.Leading;
         Width                  := 82;
+        AutoSize := false;
         Visible         :=  true  ;
         Margins.Left    :=  0     ;
         Margins.Right   :=  0     ;
@@ -561,6 +603,7 @@ begin
         TextSettings.Font.Size := 18;
         TextSettings.HorzAlign := TTextAlign.Trailing;
         Width                  := 82;
+        AutoSize := false;
         Visible         :=  true  ;
         Margins.Left    :=  0     ;
         Margins.Right   :=  0     ;
@@ -574,9 +617,10 @@ begin
   LabelXPontuacao[High(LabelXPontuacao)] := TLabel.Create(LytPontuacao[High(LytPontuacao)]);
     with LabelXPontuacao[High(LabelXPontuacao)] do
       begin
+        StyledSettings:= LabelX1teste.StyledSettings;
         Parent          :=  LytPontuacao[High(LytPontuacao)];
         Align           :=  TAlignLayout.HorzCenter;
-        Text            := '    X    ';
+        Text            := 'X';
         TextSettings.FontColor := TColor($000000); // Black
         TextSettings.Font.Size := 18;
         TextSettings.HorzAlign := TTextAlign.Center;
@@ -587,10 +631,26 @@ begin
         Margins.Right   :=  0     ;
         Margins.Top     :=  0     ;
         Margins.Bottom  :=  0     ;
-        CriaLabelSetsJ1(pTipo, pResultado, pProb1);
-          LabelSetsJ1[High(LabelSetsJ1)].Parent := LabelXPontuacao[High(LabelXPontuacao)];
-        CriaLabelSetsJ2(pTipo, pResultado, pProb2);
-         LabelSetsJ2[High(LabelSetsJ2)].Parent := LabelXPontuacao[High(LabelXPontuacao)];
+        if pTipo = 'E' then begin
+           AutoSize := true;
+           text := pResultado;
+
+        end else if pTipo = 'P' then begin
+          CriaLabelSetsJ1(pTipo, pResultado, pProb1);
+            LabelSetsJ1[High(LabelSetsJ1)].Parent := LabelXPontuacao[High(LabelXPontuacao)];
+          CriaLabelSetsJ2(pTipo, pResultado, pProb2);
+            LabelSetsJ2[High(LabelSetsJ2)].Parent := LabelXPontuacao[High(LabelXPontuacao)];
+
+        end else if pTipo = 'C' then begin
+            AutoSize := true;
+            Text := ' - : - '
+
+        end else begin
+            Text := ' - : - ';
+        end;
+
+
+
       end;
 end;
 
@@ -603,7 +663,7 @@ begin
     with LabelSetsJ1[High(LabelSetsJ1)] do
       begin
        // Parent          :=  LabelXPontuacao[High(LabelXPontuacao)]  ;
-        Align           :=  TAlignLayout.Left;
+
 
         if pTipo = 'E' then begin
            texto1            := copy(pResultado, 1, pos(':',pResultado)-2);
@@ -634,7 +694,8 @@ begin
         end;
         Text := texto1;
         TextSettings.Font.Size := 18;
-        TextSettings.HorzAlign := TTextAlign.Center;
+        Align                  := TAlignLayout.Left;
+        TextSettings.HorzAlign := TTextAlign.Trailing;
         Height                  := 33;
         AutoSize        := False;
         Visible         :=  true  ;
@@ -642,6 +703,8 @@ begin
         Margins.Right   :=  0     ;
         Margins.Top     :=  0     ;
         Margins.Bottom  :=  0     ;
+
+        StyledSettings:= LabelX1teste.StyledSettings;
       end;
 end;
 
@@ -649,10 +712,10 @@ procedure TForm15.CriaLabelSetsJ2(pTipo: string; pResultado: string; pProb2: str
 var
 texto1, texto2:string;
 begin
-  LabelSetsJ2[High(LabelSetsJ2)] := TLabel.Create(Self);
+  LabelSetsJ2[High(LabelSetsJ2)] := TLabel.Create(LabelXPontuacao[High(LabelXPontuacao)]);
+    LabelSetsJ2[High(LabelSetsJ2)].Parent  := LabelXPontuacao[High(LabelXPontuacao)];
     with LabelSetsJ2[High(LabelSetsJ2)] do
       begin
-        Parent          :=  Self  ;
         Align           :=  TAlignLayout.Right;
 
         if pTipo = 'E' then begin
@@ -667,10 +730,10 @@ begin
            end;
 
         end else if pTipo = 'P' then begin
-           Text           := pProb2;
+           texto2 := pprob2;
            if strtoint(texto2) > 50 then begin
               TextSettings.FontColor := CorGreen;
-           end else if strtoint(Text) < 50 then begin
+           end else if strtoint(texto2) < 50 then begin
               TextSettings.FontColor := CorRed;
            end else begin
               TextSettings.FontColor := CorBlack;
@@ -684,7 +747,8 @@ begin
         end;
         Text := texto2;
         TextSettings.Font.Size := 18;
-        TextSettings.HorzAlign := TTextAlign.Center;
+        Align                  := TAlignLayout.Right;
+        TextSettings.HorzAlign := TTextAlign.Leading;
         Height                  := 33;
         AutoSize        := False;
         Visible         :=  true  ;
@@ -692,6 +756,8 @@ begin
         Margins.Right   :=  0     ;
         Margins.Top     :=  0     ;
         Margins.Bottom  :=  0     ;
+
+        StyledSettings:= LabelX1teste.StyledSettings;
       end;
 end;
 
@@ -703,7 +769,7 @@ begin
     with LytLiga[High(LytLiga)] do
       begin
         Parent          :=  Jogos[High(Jogos)]  ;
-        Align           :=  TAlignLayout.Top   ;
+        Align           :=  TAlignLayout.Bottom   ;
         Height          :=  33    ;
         Visible         :=  true  ;
         Margins.Left    :=  0     ;
@@ -711,6 +777,7 @@ begin
         Margins.Top     :=  0     ;
         Margins.Bottom  :=  0     ;
         CriaLabelCompeticao(cTipo, cCompeticao, cDataJogo, cTotalPontos, cPrevTotalPontos);
+        CriaLabelDataCompeticao(cDataJogo)   ;
       end;
 end;
 
@@ -735,16 +802,18 @@ begin
         Margins.Right   :=  0     ;
         Margins.Top     :=  0     ;
         Margins.Bottom  :=  0     ;
-        CriaLabelDataCompeticao(cDataJogo)   ;
+        StyledSettings:= LabelX1teste.StyledSettings;
+
       end;
 end;
 
 procedure TForm15.CriaLabelDataCompeticao(cDataJogo: string);
 begin
-  LabelDataCompeticao[High(LabelDataCompeticao)] := TLabel.Create(LabelCompeticao[High(LabelCompeticao)]);
+  LabelDataCompeticao[High(LabelDataCompeticao)] := TLabel.Create(LytLiga[High(LytLiga)]);
     with LabelDataCompeticao[High(LabelDataCompeticao)] do
       begin
-        Parent          :=  LabelCompeticao[High(LabelCompeticao)];
+        Parent          :=  LytLiga[High(LytLiga)];
+
         Align           :=  TAlignLayout.Right    ;
         Text            := cDataJogo              ;
         TextSettings.FontColor := corBlack         ;
@@ -754,6 +823,8 @@ begin
         Margins.Right   :=  0                     ;
         Margins.Top     :=  0                     ;
         Margins.Bottom  :=  0                     ;
+
+        StyledSettings:= LabelX1teste.StyledSettings;
       end;
 end;
 
@@ -761,19 +832,21 @@ end;
 
 procedure TForm15.CriaLayoutSeparador;
 begin
-  LytSeparador[High(LytSeparador)] := TLayout.Create(Jogos[High(Jogos)]);
+  LytSeparador[High(LytSeparador)] :=TLayout.Create(Jogos[High(Jogos)]);
     with LytSeparador[High(LytSeparador)] do
       begin
         Parent          :=  Jogos[High(Jogos)]  ;
         Align           :=  TAlignLayout.MostBottom  ;
-        Height          :=  8    ;
+        Height          :=  16    ;
         Visible         :=  true  ;
         Margins.Left    :=  0     ;
         Margins.Right   :=  0     ;
         Margins.Top     :=  0     ;
         Margins.Bottom  :=  0     ;
+
         CriaLabelSeparador        ;
-        LabelSeparador[High(LabelSeparador)].Parent := LytSeparador[High(LytSeparador)];
+
+        //LabelSeparador[High(LabelSeparador)].Parent := LytSeparador[High(LytSeparador)];
       end;
 end;
 
@@ -783,9 +856,13 @@ begin
     with LabelSeparador[High(LabelSeparador)] do
       begin
         Parent          :=  LytSeparador[High(LytSeparador)]  ;
+        StyledSettings := LabelSeparadorteste.StyledSettings;
+        TextSettings := LabelSeparadorteste.TextSettings;
+        Opacity := 1;
         Align           :=  TAlignLayout.Client   ;
         AutoSize := false;
         Text            := '__________________________________________';
+        TextSettings.Font.Size := 18;
         TextSettings.HorzAlign := TTextAlign.Center;
         TextSettings.FontColor := CorCinza;
         Visible         :=  true  ;
@@ -793,31 +870,50 @@ begin
         Margins.Right   :=  0     ;
         Margins.Top     :=  0     ;
         Margins.Bottom  :=  0     ;
+
       end;
 end;
+
+{:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::}
 
 procedure TForm15.CriaLayoutJogo(cCodJogo, cCompeticao, cJogador1, cJogador2, cResultado,
                        cTipo, cDataJogo, cNumSets, cPontosJ1, cPontosJ2, cTotalPontos, cProb1, cProb2,
                        cPrevNumSets, cPrevPontosJ1, cPrevPontosJ2, cPrevTotalPontos:string);
 begin
-  Jogos[High(Jogos)] := TLayout.Create(ltDadosJogos);
+  Jogos[High(Jogos)] := TRectangle.Create(nil);
   with Jogos[High(Jogos)] do
     begin
-        Height          :=  107   ;
+        fill := Rectangletest.Fill;
+        Stroke:= Rectangletest.Stroke;
+        sides := Rectangletest.Sides;
+        parent := nil;
+        Height          :=  113   ;
         Visible         :=  true  ;
         Margins.Left    :=  0     ;
         Margins.Right   :=  0     ;
         Margins.Top     :=  0     ;
         Margins.Bottom  :=  0     ;
         Align := TAlignLayout.Top ;
+        Stroke.Kind := TBrushKind.None;
+        if hCor = TColor($F9FCFF) then begin
+          Fill.Color  := TColor($D3E7FF);
+        end else begin
+          Fill.Color  := TColor($F9FCFF);
+        end;
+        Opacity := 1;
+        Fill.Kind   := TBrushKind.Solid;
+
         Enabled         := true   ;
 
         CriaLayoutJogadores(cJogador1,cJogador2);
           LytJogadores[High(LytJogadores)].Parent := Jogos[High(Jogos)];
+
         CriaLayoutPontuacao(cTipo, cResultado, cPontosJ1, cPontosJ2, cProb1, cProb2, cPrevPontosJ1, cPrevPontosJ2);
           LytPontuacao[High(LytPontuacao)].Parent := Jogos[High(Jogos)];
+
         CriaLayoutLiga(cTipo, cCompeticao, cDataJogo, cTotalPontos, cPrevTotalPontos);
           LytLiga[High(LytLiga)].Parent := Jogos[High(Jogos)];
+
         CriaLayoutSeparador;
           LytSeparador[High(LytSeparador)].Parent := Jogos[High(Jogos)];
         parent := ltDadosJogos;
@@ -848,14 +944,19 @@ begin
       CriaLayoutJogo(cCodJogo, cCompeticao, cJogador1, cJogador2, cResultado,
                        cTipo, cDataJogo, cNumSets, cPontosJ1, cPontosJ2, cTotalPontos, cProb1, cProb2,
                        cPrevNumSets, cPrevPontosJ1, cPrevPontosJ2, cPrevTotalPontos);
-      ltDadosJogos.Height := (Jogos[High(Jogos)].Height * High(Jogos));
+
+
+      Jogos[High(Jogos)].Height := ((LabelXJogadores[High(LabelXJogadores)].Height +
+                                     LabelXPontuacao[High(LabelXPontuacao)].Height +
+                                     LabelCompeticao[High(LabelCompeticao)].Height +
+                                     LabelSeparador[High(LabelSeparador)].Height));
+
+      ltDadosJogos.Height := ((Jogos[High(Jogos)].Height * (High(Jogos))+2));
 
     except
       showmessage('Erro ao criar TJogoTenis');
     END;
 
-
-  Jogos[High(Jogos)].Align := TAlignLayout.Top;
   Jogos[High(Jogos)].Name := 'j' + IntToStr(High(Jogos));
 end;
 
@@ -998,24 +1099,42 @@ end;
 {$IF DEFINED (ANDROID)}
 function OpenURL(const URL: string; const DisplayError: Boolean = False): Boolean;
 var
-  Intent: JIntent;
+  Intent: JIntent; { Não tenho muito certeza qual unit pertence a JIntent }
 begin
-// There may be an issue with the geo: prefix and URLEncode.
-// will need to research
-  Intent := TJIntent.JavaClass.init(TJIntent.JavaClass.ACTION_VIEW,
-    TJnet_Uri.JavaClass.parse(StringToJString(URL)));
-  try
-    TAndroidHelper.Activity.startActivity(Intent);
-    exit(true);
-  except
-    on e: Exception do
-    begin
-      if DisplayError then ShowMessage('Error: ' + e.Message);
-      exit(false);
-    end;
-  end;
+  Intent := TJIntent.Create;
+  Intent.setAction(TJIntent.JavaClass.ACTION_VIEW);
+  Intent.setData(StrToJURI(URL
+  ));
+  SharedActivity.startActivity(Intent); //<- vai chamar o navegador e carregar o website declarado na linha acima.
 end;
 {$ENDIF}
+
+procedure TForm15.Label12Click(Sender: TObject);
+var
+retorno : tstringlist;
+const b = '/';
+begin
+
+    retorno := tstringlist.Create;
+    if edit3.Text <> '' then begin
+      //renovar
+      retorno.Text:= GetURL(lsValidarAssinatura + cpf + b + senha + b + edit3.Text);
+      if not(retorno.Text.contains('LOGINERROR')) then BEGIN
+      retorno.Text := copy(retorno.text,pos('MENSAGEM',retorno.text)+11,17);
+      dataPermissao := copy(retorno.Text, 1, 16);
+      VerificaLogin;
+      END;
+
+    end {$IF DEFINED (ANDROID)}else   if CheckBox3.IsChecked then begin
+      OpenURL('http://mpago.la/2AzhhSN',false)
+    end else if checkbox5.IsChecked then begin
+      OpenURL('https://www.mercadopago.com.br/checkout/v1/redirect?pref_id=192089083-9fe17bb7-8ee5-4863-9722-0d9bc3866ad5',false)
+    end else begin
+      showMessage('Selecione uma opção ou insira sua chave!');
+    end;
+    retorno.Clear;
+{$ENDIF}
+end;
 
 procedure TForm15.Label23Click(Sender: TObject);
 begin
@@ -1032,7 +1151,12 @@ begin
 {$IF DEFINED (ANDROID)}
     if CheckBox1.IsChecked then begin
       OpenURL('http://mpago.la/2AzhhSN',false)
+    end else if checkbox2.IsChecked then begin
+      OpenURL('https://www.mercadopago.com.br/checkout/v1/redirect?pref_id=192089083-9fe17bb7-8ee5-4863-9722-0d9bc3866ad5',false)
+    end else begin
+      showMessage('Selecione uma opção ou insira sua chave!');
     end;
+
 {$ENDIF}
 {$IF DEFINED (MSWINDOWS)}
 
@@ -1341,7 +1465,7 @@ end;
 procedure TForm15.Button1Click(Sender: TObject);
 begin
    ShowMessage(LabelXPontuacao[High(LabelXPontuacao)].Parent.Name + LabelPontosJ1[High(LabelPontosJ1)].Parent.Name);
-   ShowMessage(LabelXPontuacao[High(LabelXPontuacao)].Width+ ' | ' + inttostr(LabelXPontuacao[High(LabelXPontuacao)].Height));
+
 end;
 
 procedure TForm15.CarregaDados;
@@ -1430,31 +1554,222 @@ const b = '/';
 const s = '","';
 begin
     if logOK then begin
+      DestroyJogos;
       dJogos := TStringList.Create;
-         if DateEdit1.Date = now then begin
+         if formatdatetime('dd/MM/yyyy',DateEdit1.Date) = formatdatetime('dd/MM/yyyy',now) then begin
            // http://localhost:8080/GetListaJogosAtuais/usuario/senha/probs
+           try
+           dJogos.Text := GetURL(lsJogosAtuais + cpf + b + senha + b + filtroProbs);
+
+           if dJogos.Text.contains('JOGOS') then begin
+
+            ProgressBar1.Visible := true;
+            ProgressBar1.Position.X := 0;
+            ProgressBar1.Max := Length(dJogos.Text);
+              while dJogos.Text.Contains(PREVTOTALPONTOS) do begin
+                cCodJogo := ''; cCompeticao := ''; cJogador1 := ''; cJogador2 := ''; cResultado := '';
+                cTipo := ''; cDataJogo := ''; cNumSets := ''; cPontosJ1 := ''; cPontosJ2 := ''; cTotalPontos := ''; cProb1 := ''; cProb2 := '';
+                cPrevNumSets := ''; cPrevPontosJ1 := ''; cPrevPontosJ2 := ''; cPrevTotalPontos := '';
+                // CODIGO
+                dJogos.Text := copy(dJogos.Text, pos(CODIGO, dJogos.Text)+9);
+                cCodJogo    := copy(dJogos.Text, 1, pos(s, dJogos.Text)-1);
+                Posicao     := Trunc(ProgressBar1.Max - Length(dJogos.Text));
+                ProgressBar1.Position.X := Posicao;//TPosition(Posicao);
+                //COMPETICAO
+                dJogos.Text := copy(dJogos.Text, pos(COMPETICAO, dJogos.Text)+13);
+                cCompeticao := copy(dJogos.Text, 1, pos(s, dJogos.Text)-1);
+                Posicao     := Trunc(ProgressBar1.Max - Length(dJogos.Text));
+                ProgressBar1.Position.X := Posicao;
+                //JOGADOR1
+                dJogos.Text := copy(dJogos.Text, pos(JOGADORES, dJogos.Text)+12);
+                cJogador1   := copy(dJogos.Text, 1, pos(' X ', dJogos.Text)-1);
+                Posicao     := Trunc(ProgressBar1.Max - Length(dJogos.Text));
+                ProgressBar1.Position.x := Posicao;
+                //JOGADOR2
+                dJogos.Text := copy(dJogos.Text, pos(' X ', dJogos.Text)+3);
+                cJogador2   := copy(dJogos.Text, 1, pos(s, dJogos.Text)-1);
+                Posicao     := Trunc(ProgressBar1.Max - Length(dJogos.Text));
+                ProgressBar1.Position.X := Posicao;
+                //RESULTADO
+                dJogos.Text := copy(dJogos.Text, pos(RESULTADO, dJogos.Text)+12);
+                cResultado  := copy(dJogos.Text, 1, pos(s, dJogos.Text)-1);
+                Posicao     := Trunc(ProgressBar1.Max - Length(dJogos.Text));
+                ProgressBar1.Position.X := Posicao;
+                //DATAJOGO
+                dJogos.Text := copy(dJogos.Text, pos(DATAJOGO, dJogos.Text)+11);
+                cDataJogo   := copy(dJogos.Text, 1, pos(s, dJogos.Text)-1);
+                Posicao     := Trunc(ProgressBar1.Max - Length(dJogos.Text));
+                ProgressBar1.Position.X := Posicao;
+                //TIPO
+                dJogos.Text := copy(dJogos.Text, pos(TIPO, dJogos.Text)+7);
+                cTipo       := copy(dJogos.Text, 1, pos(s, dJogos.Text)-1);
+                Posicao     := Trunc(ProgressBar1.Max - Length(dJogos.Text));
+                ProgressBar1.Position.X := Posicao;
+                //NUMSETS
+                dJogos.Text := copy(dJogos.Text, pos(NUMSETS, dJogos.Text)+10);
+                cNumSets    := copy(dJogos.Text, 1, pos(s, dJogos.Text)-1);
+                Posicao     := Trunc(ProgressBar1.Max - Length(dJogos.Text));
+                ProgressBar1.Position.X := Posicao;
+                //PONTOSJ1
+                dJogos.Text := copy(dJogos.Text, pos(PONTOSJ1, dJogos.Text)+11);
+                cPontosJ1   := copy(dJogos.Text, 1, pos(s, dJogos.Text)-1);
+                Posicao     := Trunc(ProgressBar1.Max - Length(dJogos.Text));
+                ProgressBar1.Position.X := Posicao;
+                //PONTOSJ2
+                dJogos.Text := copy(dJogos.Text, pos(PONTOSJ2, dJogos.Text)+11);
+                cPontosJ2   := copy(dJogos.Text, 1, pos(s, dJogos.Text)-1);
+                Posicao     := Trunc(ProgressBar1.Max - Length(dJogos.Text));
+                ProgressBar1.Position.X := Posicao;
+                //TOTALPONTOS
+                dJogos.Text := copy(dJogos.Text, pos(TOTALPONTOS, dJogos.Text)+14);
+                cTotalPontos   := copy(dJogos.Text, 1, pos('"', dJogos.Text)-1);
+                Posicao     := Trunc(ProgressBar1.Max - Length(dJogos.Text));
+                ProgressBar1.Position.X := Posicao;
+                //PROB1
+                dJogos.Text := copy(dJogos.Text, pos(PROB1, dJogos.Text)+8);
+                cProb1   := copy(dJogos.Text, 1, pos('"', dJogos.Text)-1);
+                Posicao     := Trunc(ProgressBar1.Max - Length(dJogos.Text));
+                ProgressBar1.Position.X := Posicao;
+                //PROB2
+                dJogos.Text := copy(dJogos.Text, pos(PROB2, dJogos.Text)+8);
+                cProb2   := copy(dJogos.Text, 1, pos('"', dJogos.Text)-1);
+                Posicao     := Trunc(ProgressBar1.Max - Length(dJogos.Text));
+                ProgressBar1.Position.X := Posicao;
+                //PREVNUMSETS
+                dJogos.Text := copy(dJogos.Text, pos(PREVNUMSETS, dJogos.Text)+14);
+                cPrevNumSets   := copy(dJogos.Text, 1, pos('"', dJogos.Text)-1);
+                Posicao     := Trunc(ProgressBar1.Max - Length(dJogos.Text));
+                ProgressBar1.Position.X := Posicao;
+                //PREVPONTOSJ1
+                dJogos.Text := copy(dJogos.Text, pos(PREVPONTOSJ1, dJogos.Text)+15);
+                cPrevPontosJ1   := copy(dJogos.Text, 1, pos('"', dJogos.Text)-1);
+                Posicao     := Trunc(ProgressBar1.Max - Length(dJogos.Text));
+                ProgressBar1.Position.X := Posicao;
+                //PREVPONTOSJ2
+                dJogos.Text := copy(dJogos.Text, pos(PREVPONTOSJ2, dJogos.Text)+15);
+                cPrevPontosJ2   := copy(dJogos.Text, 1, pos('"', dJogos.Text)-1);
+                Posicao     := Trunc(ProgressBar1.Max - Length(dJogos.Text));
+                ProgressBar1.Position.X := Posicao;
+                //PREVTOTALPONTOS
+                dJogos.Text := copy(dJogos.Text, pos(PREVTOTALPONTOS, dJogos.Text)+18);
+                cPrevTotalPontos   := copy(dJogos.Text, 1, pos('"', dJogos.Text)-1);
+                Posicao     := Trunc(ProgressBar1.Max - Length(dJogos.Text));
+                ProgressBar1.Position.X := Posicao;
+
+                //CRIA JOGO
+                CriaJogo(cCodJogo, cCompeticao, cJogador1, cJogador2, cResultado,
+                         cTipo, cDataJogo, cNumSets, cPontosJ1, cPontosJ2, cTotalPontos, cProb1, cProb2,
+                         cPrevNumSets, cPrevPontosJ1, cPrevPontosJ2, cPrevTotalPontos);
+              end;
+              ProgressBar1.Visible:=false;
+           END else if RESTResJogosPassados.Content.Contains('LOGINERROR') then begin
+             ShowMessage('É necessário ter uma assinatura válida para visualizar os jogos.');
+           end;
+           except
+             ShowMessage('Sem conexão ao servidor!');
+           end;
+
          end else
 
 {:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::}
 
          if formatdatetime('dd/MM/yyyy',DateEdit1.Date) > formatdatetime('dd/MM/yyyy',now) then begin
            // http://localhost:8080/GetListaJogosFuturos/usuario/senha/probs
+           try
+           dJogos.Text := GetURL(lsJogosFuturos + cpf + b + senha + b + filtroProbs);
+
+           if dJogos.Text.contains('JOGOS') then begin
+
+            ProgressBar1.Visible := true;
+            ProgressBar1.Position.X := 0;
+            ProgressBar1.Max := Length(dJogos.Text);
+              while dJogos.Text.Contains(TOTALPONTOS) do begin
+                cCodJogo := ''; cCompeticao := ''; cJogador1 := ''; cJogador2 := ''; cResultado := '';
+                cTipo := ''; cDataJogo := ''; cNumSets := ''; cPontosJ1 := ''; cPontosJ2 := ''; cTotalPontos := ''; cProb1 := ''; cProb2 := '';
+                cPrevNumSets := ''; cPrevPontosJ1 := ''; cPrevPontosJ2 := ''; cPrevTotalPontos := '';
+                // CODIGO
+                dJogos.Text := copy(dJogos.Text, pos(CODIGO, dJogos.Text)+9);
+                cCodJogo    := copy(dJogos.Text, 1, pos(s, dJogos.Text)-1);
+                Posicao     := Trunc(ProgressBar1.Max - Length(dJogos.Text));
+                ProgressBar1.Position.X := Posicao;//TPosition(Posicao);
+                //COMPETICAO
+                dJogos.Text := copy(dJogos.Text, pos(COMPETICAO, dJogos.Text)+13);
+                cCompeticao := copy(dJogos.Text, 1, pos(s, dJogos.Text)-1);
+                Posicao     := Trunc(ProgressBar1.Max - Length(dJogos.Text));
+                ProgressBar1.Position.X := Posicao;
+                //JOGADOR1
+                dJogos.Text := copy(dJogos.Text, pos(JOGADORES, dJogos.Text)+12);
+                cJogador1   := copy(dJogos.Text, 1, pos(' X ', dJogos.Text)-1);
+                Posicao     := Trunc(ProgressBar1.Max - Length(dJogos.Text));
+                ProgressBar1.Position.x := Posicao;
+                //JOGADOR2
+                dJogos.Text := copy(dJogos.Text, pos(' X ', dJogos.Text)+3);
+                cJogador2   := copy(dJogos.Text, 1, pos(s, dJogos.Text)-1);
+                Posicao     := Trunc(ProgressBar1.Max - Length(dJogos.Text));
+                ProgressBar1.Position.X := Posicao;
+                //DATAJOGO
+                dJogos.Text := copy(dJogos.Text, pos(DATAJOGO, dJogos.Text)+11);
+                cDataJogo   := copy(dJogos.Text, 1, pos(s, dJogos.Text)-1);
+                Posicao     := Trunc(ProgressBar1.Max - Length(dJogos.Text));
+                ProgressBar1.Position.X := Posicao;
+                //TIPO
+                dJogos.Text := copy(dJogos.Text, pos(TIPO, dJogos.Text)+7);
+                cTipo       := copy(dJogos.Text, 1, pos(s, dJogos.Text)-1);
+                Posicao     := Trunc(ProgressBar1.Max - Length(dJogos.Text));
+                ProgressBar1.Position.X := Posicao;
+                //PROB1
+                dJogos.Text := copy(dJogos.Text, pos(PROB1, dJogos.Text)+8);
+                cProb1   := copy(dJogos.Text, 1, pos('"', dJogos.Text)-1);
+                Posicao     := Trunc(ProgressBar1.Max - Length(dJogos.Text));
+                ProgressBar1.Position.X := Posicao;
+                //PROB2
+                dJogos.Text := copy(dJogos.Text, pos(PROB2, dJogos.Text)+8);
+                cProb2   := copy(dJogos.Text, 1, pos('"', dJogos.Text)-1);
+                Posicao     := Trunc(ProgressBar1.Max - Length(dJogos.Text));
+                ProgressBar1.Position.X := Posicao;
+                //PREVNUMSETS
+                dJogos.Text := copy(dJogos.Text, pos(PREVNUMSETS, dJogos.Text)+14);
+                cPrevNumSets   := copy(dJogos.Text, 1, pos('"', dJogos.Text)-1);
+                Posicao     := Trunc(ProgressBar1.Max - Length(dJogos.Text));
+                ProgressBar1.Position.X := Posicao;
+                //PREVPONTOSJ1
+                dJogos.Text := copy(dJogos.Text, pos(PREVPONTOSJ1, dJogos.Text)+15);
+                cPrevPontosJ1   := copy(dJogos.Text, 1, pos('"', dJogos.Text)-1);
+                Posicao     := Trunc(ProgressBar1.Max - Length(dJogos.Text));
+                ProgressBar1.Position.X := Posicao;
+                //PREVPONTOSJ2
+                dJogos.Text := copy(dJogos.Text, pos(PREVPONTOSJ2, dJogos.Text)+15);
+                cPrevPontosJ2   := copy(dJogos.Text, 1, pos('"', dJogos.Text)-1);
+                Posicao     := Trunc(ProgressBar1.Max - Length(dJogos.Text));
+                ProgressBar1.Position.X := Posicao;
+                //PREVTOTALPONTOS
+                dJogos.Text := copy(dJogos.Text, pos(PREVTOTALPONTOS, dJogos.Text)+18);
+                cPrevTotalPontos   := copy(dJogos.Text, 1, pos('"', dJogos.Text)-1);
+                Posicao     := Trunc(ProgressBar1.Max - Length(dJogos.Text));
+                ProgressBar1.Position.X := Posicao;
+
+                //CRIA JOGO
+                CriaJogo(cCodJogo, cCompeticao, cJogador1, cJogador2, cResultado,
+                         cTipo, cDataJogo, cNumSets, cPontosJ1, cPontosJ2, cTotalPontos, cProb1, cProb2,
+                         cPrevNumSets, cPrevPontosJ1, cPrevPontosJ2, cPrevTotalPontos);
+              end;
+              ProgressBar1.Visible:=false;
+           END else if RESTResJogosPassados.Content.Contains('LOGINERROR') then begin
+             ShowMessage('É necessário ter uma assinatura válida para visualizar os jogos.');
+           end;
+           except
+             ShowMessage('Sem conexão ao servidor!');
+           end;
          end else
 
 {:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::}
 
          if formatdatetime('dd/MM/yyyy',DateEdit1.Date) < formatdatetime('dd/MM/yyyy',now) then begin
-           // http://localhost:8080/GetListaJogosPassados/usuario/senha/data
-          // RESTJogosPassados.BaseURL := lsJogosPassados + cpf + b + senha + b + formatdatetime('dd.MM.yyyy',dateedit1.Date);
-           //RESTReqJogosPassados.Method := TRESTRequestMethod.rmGET;
-
           try
-           //  RESTReqJogosPassados.Execute;
            dJogos.Text := GetURL(lsJogosPassados + cpf + b + senha + b + formatdatetime('dd.MM.yyyy',dateedit1.Date));
 
-           //if RESTResJogosPassados.Content.Contains('JOGOS') then BEGIN
            if dJogos.Text.contains('JOGOS') then begin
-            //dJogos.Text := RESTResJogosPassados.Content;
+
             ProgressBar1.Visible := true;
             ProgressBar1.Position.X := 0;
             ProgressBar1.Max := Length(dJogos.Text);
@@ -1526,8 +1841,6 @@ begin
               ProgressBar1.Visible:=false;
            END else if RESTResJogosPassados.Content.Contains('LOGINERROR') then begin
              ShowMessage('É necessário ter uma assinatura válida para visualizar os jogos.');
-           end else begin
-             ShowMessage('Erro Desconhecido');
            end;
            except
              ShowMessage('Sem conexão ao servidor!');
@@ -1549,6 +1862,7 @@ begin
     try
      TabControl3.ActiveTab := TabItem7;
      logOK := false;
+     hCor := TColor($F9FCFF);
 
      if TFile.Exists(GetSystemPath) then begin
         CarregaDados;
@@ -1563,7 +1877,7 @@ end;
 
 procedure TForm15.sbCancelaEdicDadosClick(Sender: TObject);
 begin
-      sbConfEditDados.StyleLookup := 'composetoolbutton';
+     sbConfEditDados.StyleLookup := 'composetoolbutton';
      sbCancelaEdicDados.Visible  := false;
      sbCancelaEdicDados.Enabled  := false;
 
@@ -1584,9 +1898,9 @@ begin
 
 
   if logOK then begin
-   if CheckBox4.IsChecked then begin
 
-     if not EditMode then begin
+
+   if not EditMode then begin
 
       sbConfEditDados.StyleLookup := 'donetoolbutton';
       sbCancelaEdicDados.Visible  := true;
@@ -1599,13 +1913,13 @@ begin
 
       Layout35.Enabled     := true;
        EditMode := true;
-     end else begin
-
-      try
+   end else begin
+    if CheckBox4.IsChecked then begin
+     try
          AtualizaCadastro(usuario, DUserNome.Text, senha, DUserSenha.Text, email, DUserEmail.Text,filtroProbs, DUserFiltro.Text);
-      finally
+     finally
 
-      end;
+
 
       sbConfEditDados.StyleLookup := 'composetoolbutton';
       sbCancelaEdicDados.Visible  := false;
@@ -1618,10 +1932,16 @@ begin
 
       Layout35.Enabled     := false;
       EditMode := False;
+      ShowMessage('Dados Atualizados com sucesso!');
      end;
-   end else begin
-     ShowMessage('É necessário aceitar os termos!');
+
+    end else begin
+        ShowMessage('É necessário aceitar os termos!');
+    end;
+
+
    end;
+   
 
   end else begin
      ShowMessage('Você não está logado');

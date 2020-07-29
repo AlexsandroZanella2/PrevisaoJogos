@@ -2,7 +2,7 @@ unit ServerMethodsUnit1;
 
 interface
 
-uses System.SysUtils, System.Classes, System.JSON, Dialogs, ServerUtils, SysTypes, vcl.Forms,FIBDatabase, pFIBDatabase,
+uses System.Math, System.SysUtils, System.Classes, System.JSON, Dialogs, ServerUtils, SysTypes, vcl.Forms,FIBDatabase, pFIBDatabase,
 Data.DB, FIBDataSet, pFIBDataSet, FIBQuery, pFIBQuery, dateutils;
 
 type
@@ -44,6 +44,12 @@ type
     // http://localhost:8080/GetListaJogosAtuais/usuario/senha/probs
     function GetListaJogosAtuais(usuario,senha,probs:string)   : String;
 
+
+    function GetValidarAssinatura(usuario, senha, chaveD:string):string;
+      //http://botstenisdemesa.ddns.net:8080/GetValidaAssinatura/usuario/senha/chave
+
+    function GetFFRjkSFDc(tempo:string):string;
+      //http://botstenisdemesa.ddns.net:8080/GetFFRjkSFDc/tempo
   public
     { Public declarations }
     Constructor Create              (aOwner     : TComponent); Override;
@@ -52,6 +58,7 @@ type
     function CallPUTServerMethod    (Argumentos : TArguments) : string;
     function CallDELETEServerMethod (Argumentos : TArguments) : string;
     function CallPOSTServerMethod   (Argumentos : TArguments) : string;
+    const chave = '*&&¨%&%$&#¨$#@¨³£¢¬²³¬~]´~]/;;.gfhkmSDFFR$345%#5459ihj*+.fd';
   end;
 {$METHODINFO OFF}
 
@@ -106,6 +113,71 @@ begin
      inherited;
 End;
 
+
+function Cripto(Action, Src, Key: string): string;
+var
+  KeyLen: Integer;
+  KeyPos: Integer;
+  offset: Integer;
+  dest: string;
+  SrcPos: Integer;
+  SrcAsc: Integer;
+  TmpSrcAsc: Integer;
+  Range: Integer;
+  s: string[255];
+  C: array [0 .. 255] of Byte absolute s;
+begin
+  if Src = '' then
+  begin
+    result := '';
+    exit;
+  end;
+  dest := '';
+  KeyLen := Length(Key);
+  KeyPos := 0;
+//  SrcPos := 0;
+//  SrcAsc := 0;
+  Range := 256;
+  if Action = UpperCase('E') then
+  begin
+    Randomize;
+    offset := Random(Range);
+    dest := format('%1.2x', [offset]);
+    for SrcPos := 1 to Length(Src) do
+    begin
+      SrcAsc := (Ord(Src[SrcPos]) + offset) MOD 255;
+      if KeyPos < KeyLen then
+        KeyPos := KeyPos + 1
+      else
+        KeyPos := 1;
+      SrcAsc := SrcAsc xor Ord(Key[KeyPos]);
+      dest := dest + format('%1.2x', [SrcAsc]);
+      offset := SrcAsc;
+    end;
+  end;
+  if Action = UpperCase('D') then
+  begin
+    offset := StrToInt('$' + Copy(Src, 1, 2));
+    SrcPos := 3;
+    repeat
+      SrcAsc := StrToInt('$' + Copy(Src, SrcPos, 2));
+      if KeyPos < KeyLen Then
+        KeyPos := KeyPos + 1
+      else
+        KeyPos := 1;
+      TmpSrcAsc := SrcAsc xor Ord(Key[KeyPos]);
+      if TmpSrcAsc <= offset then
+        TmpSrcAsc := 255 + TmpSrcAsc - offset
+      else
+        TmpSrcAsc := TmpSrcAsc - offset;
+      dest := dest + chr(TmpSrcAsc);
+      offset := SrcAsc;
+      SrcPos := SrcPos + 2;
+    until SrcPos >= Length(Src);
+  end;
+  Cripto := dest;
+end;
+
 Function TServerMethods1.ReturnErro : String;
 Var
      WSResult : TResultErro;
@@ -137,6 +209,21 @@ begin
         Else
            Result := ReturnErro;
      end;
+
+     if UpperCase(Argumentos[0]) = UpperCase('GetValidarAssinatura') then begin
+        if Length (Argumentos) = 4 then
+           Result := GetValidarAssinatura(Argumentos[1],Argumentos[2],Argumentos[3])
+        Else
+           Result := ReturnErro;
+     end;
+
+     if UpperCase(Argumentos[0]) = UpperCase('GetFFRjkSFDc') then begin
+        if Length (Argumentos) = 2 then
+           Result := GetFFRjkSFDc(Argumentos[1])
+        Else
+           Result := 'Houve algum problema ao solicitar, entre em contato com o administrador';
+     end;
+
 
      if UpperCase(Argumentos[0]) = UpperCase('GetListaJogosAtuais') then begin
         if Length (Argumentos) = 4 then
@@ -305,6 +392,99 @@ Begin
      end;
 end;
 
+function TServerMethods1.GetFFRjkSFDc(tempo:string):string;
+var
+dataNova:tdate;
+datastring:string;
+datacriptada:string;
+i:integer;
+LJsonObject : TJSONObject;
+begin
+try
+  i:= strtoint(tempo);
+  dataNova := IncMonth(now, i);
+  datastring := FormatDateTime('dd.MM.yyyy',dataNova);
+  datacriptada := Cripto('E',(datastring + ' 23:59'),chave);
+
+            Result := 'Essa é sua chave de ativação de assinatura: '+ datacriptada;
+except
+  ShowMessage('Parâmetros incorretos!');
+end;
+end;
+
+function TServerMethods1.GetValidarAssinatura(usuario: string; senha: string; chaveD: string):string;
+Var
+     ID          : Integer;
+     LJson       : TJSONObject;
+     LJsonObject : TJSONObject;
+     LArr        : TJSONArray;
+     permissaoTExt:string;
+     permissaoDateTime:tDateTime;
+     t1,t2,t3:string;
+Begin
+     LJsonObject := TJSONObject.Create;
+     LArr        := TJSONArray.Create;
+
+     database.Open;
+
+
+     dataset.Close;
+     dataset.SelectSQL.Text :=  'select * from usuarios '+
+                                'where ((nome = '+char(39)+usuario+char(39)+ ') or ( '+
+                                'cpf = '+char(39)+usuario+char(39)+ ') or ( '+
+                                'email = '+char(39)+usuario+char(39)+ ')) '+
+                                'and senha = '+char(39)+senha+char(39);
+
+     dataset.Open;
+     dataset.First;
+  if not(dataset.Eof) then begin
+
+     try
+        permissaoTExt := Cripto('D',chaveD,chave );
+        permissaoDateTime := strtodatetime(permissaoTExt);
+     except
+            LJsonObject.AddPair(TJSONPair.Create('STATUS', 'OK'));
+            LJsonObject.AddPair(TJSONPair.Create('MENSAGEM', 'LOGINERROR'));
+            Result := LJsonObject.ToString;
+            abort;
+     end;
+
+
+
+     try
+
+         dataset.Close;
+         query.SQL.Text := 'update Jogos_tenismesa '+
+                           'set data_permissao = ' + char(39) +permissaoTExt+char(39) + ' ' +
+                           'where cpf = '+ char(39) +usuario+char(39);
+
+
+          if (database.Connected = false) or (transacao_Query.Active = false) then begin
+                  database.Open;
+                  transacao_Query.Active := true;
+              end;
+              query.ExecQuery;
+              transacao_Query.Commit;
+
+
+
+     finally
+            LJsonObject.AddPair(TJSONPair.Create('STATUS', 'OK'));
+            LJsonObject.AddPair(TJSONPair.Create('MENSAGEM', permissaoTExt));
+            Result := LJsonObject.ToString;
+     end;
+
+  end else begin
+        try
+            LJsonObject.AddPair(TJSONPair.Create('STATUS', 'OK'));
+            LJsonObject.AddPair(TJSONPair.Create('MENSAGEM', 'LOGINERROR'));
+            Result := LJsonObject.ToString;
+        finally
+            LJsonObject.Free;
+        end;
+  end;
+end;
+
 function TServerMethods1.GetListaJogosPassados(usuario,senha,data:string) : String;
       // http://localhost:8080/GetListaJogosPassados/usuario/senha/data
 Var
@@ -463,7 +643,7 @@ Begin
                                   'where  data_jogo < ' + char(39) +
                                   formatdatetime('dd.MM.yyyy',now) +' 23:59'+char(39) + ' '+
                                   'and data_jogo > '+ char(39) + formatdatetime('dd.MM.yyyy',now) + ' 00:00'+char(39) + ' '+
-                                  'and (prob1 > '+ probs+') or (prob2 > '+ probs +')';
+                                  'and ((prob1 > '+ probs+') or (prob2 > '+ probs +'))';
          dataset.Open;
          dataset.First;
 
