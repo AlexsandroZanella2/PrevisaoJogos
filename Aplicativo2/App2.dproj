@@ -6,7 +6,7 @@
         <MainSource>App2.dpr</MainSource>
         <Base>True</Base>
         <Config Condition="'$(Config)'==''">Debug</Config>
-        <Platform Condition="'$(Platform)'==''">Android</Platform>
+        <Platform Condition="'$(Platform)'==''">Win32</Platform>
         <TargetedPlatforms>32787</TargetedPlatforms>
         <AppType>Application</AppType>
     </PropertyGroup>
@@ -145,6 +145,8 @@
         <Android_NotificationIcon72>$(BDS)\bin\Artwork\Android\FM_NotificationIcon_72x72.png</Android_NotificationIcon72>
         <Android_NotificationIcon96>$(BDS)\bin\Artwork\Android\FM_NotificationIcon_96x96.png</Android_NotificationIcon96>
         <EnabledSysJars>android-support-v4.dex.jar;cloud-messaging.dex.jar;com-google-android-gms.play-services-ads-base.17.2.0.dex.jar;com-google-android-gms.play-services-ads-identifier.16.0.0.dex.jar;com-google-android-gms.play-services-ads-lite.17.2.0.dex.jar;com-google-android-gms.play-services-ads.17.2.0.dex.jar;com-google-android-gms.play-services-analytics-impl.16.0.8.dex.jar;com-google-android-gms.play-services-analytics.16.0.8.dex.jar;com-google-android-gms.play-services-base.16.0.1.dex.jar;com-google-android-gms.play-services-basement.16.2.0.dex.jar;com-google-android-gms.play-services-gass.17.2.0.dex.jar;com-google-android-gms.play-services-identity.16.0.0.dex.jar;com-google-android-gms.play-services-maps.16.1.0.dex.jar;com-google-android-gms.play-services-measurement-base.16.4.0.dex.jar;com-google-android-gms.play-services-measurement-sdk-api.16.4.0.dex.jar;com-google-android-gms.play-services-stats.16.0.1.dex.jar;com-google-android-gms.play-services-tagmanager-v4-impl.16.0.8.dex.jar;com-google-android-gms.play-services-tasks.16.0.1.dex.jar;com-google-android-gms.play-services-wallet.16.0.1.dex.jar;com-google-firebase.firebase-analytics.16.4.0.dex.jar;com-google-firebase.firebase-common.16.1.0.dex.jar;com-google-firebase.firebase-iid-interop.16.0.1.dex.jar;com-google-firebase.firebase-iid.17.1.1.dex.jar;com-google-firebase.firebase-measurement-connector.17.0.1.dex.jar;com-google-firebase.firebase-messaging.17.5.0.dex.jar;fmx.dex.jar;google-play-billing.dex.jar;google-play-licensing.dex.jar</EnabledSysJars>
+        <VerInfo_Build>1</VerInfo_Build>
+        <Android_NotificationAccentColor>#FFFFFF</Android_NotificationAccentColor>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Base_Win32)'!=''">
         <DCC_UsePackage>DBXSqliteDriver;RESTComponents;DBXInterBaseDriver;vclactnband;vclFireDAC;tethering;svnui;FireDACADSDriver;BestComponents;vcltouch;vcldb;bindcompfmx;svn;ipstudiowinwordxp;inetdb;FmxTeeUI;fmx;FireDACIBDriver;fmxdae;vclib;frxTee26;fs26;dbexpress;IndyCore;vclx;frxIntIO26;dsnap;FireDACCommon;RESTBackendComponents;FMXfs26;VCLRESTComponents;soapserver;fsTee26;vclie;bindengine;DBXMySQLDriver;CloudService;FireDACMySQLDriver;fsIBX26;FMXfsADO26;frx26;FireDACCommonODBC;FireDACCommonDriver;frxIntIOIndy26;inet;bindcompdbx;IndyIPCommon;fsFD26;GR32_D;vcl;IndyIPServer;frxDB26;IndySystem;fsADO26;dsnapcon;FireDACMSAccDriver;fmxFireDAC;fsDB26;vclimg;FMXfsIBX26;TeeDB;FireDAC;FireDACSqliteDriver;FireDACPgDriver;ibmonitor;FMXTee;FIBPlus_D26;ipstudiowinclient;soaprtl;DbxCommonDriver;ibxpress;Tee;xmlrtl;soapmidas;ibxbindings;fmxobj;vclwinx;GR32_R;rtl;DbxClientDriver;CustomIPTransport;vcldsnap;bindcomp;appanalytics;ipstudiowin;officeXPrt;IndyIPClient;bindcompvcl;TeeUI;FMXfsDB26;dbxcds;VclSmp;adortl;dsnapxml;dbrtl;inetdbxpress;IndyProtocols;FMXfsTee26;fmxase;$(DCC_UsePackage)</DCC_UsePackage>
@@ -154,8 +156,8 @@
         <VerInfo_Keys>CompanyName=;FileDescription=$(MSBuildProjectName);FileVersion=1.0.0.0;InternalName=;LegalCopyright=;LegalTrademarks=;OriginalFilename=;ProgramID=com.embarcadero.$(MSBuildProjectName);ProductName=$(MSBuildProjectName);ProductVersion=1.0.0.0;Comments=</VerInfo_Keys>
         <VerInfo_Locale>1033</VerInfo_Locale>
         <Manifest_File>$(BDS)\bin\default_app.manifest</Manifest_File>
-        <UWP_DelphiLogo44>$(BDS)\bin\Artwork\Windows\UWP\delphi_UwpDefault_44.png</UWP_DelphiLogo44>
-        <UWP_DelphiLogo150>$(BDS)\bin\Artwork\Windows\UWP\delphi_UwpDefault_150.png</UWP_DelphiLogo150>
+        <UWP_DelphiLogo44>mesh\raquetes\pngegg48x.png</UWP_DelphiLogo44>
+        <UWP_DelphiLogo150>mesh\raquetes\pngegg144x.png</UWP_DelphiLogo150>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Base_Win64)'!=''">
         <DCC_UsePackage>DBXSqliteDriver;RESTComponents;DBXInterBaseDriver;vclactnband;vclFireDAC;tethering;FireDACADSDriver;vcltouch;vcldb;bindcompfmx;inetdb;FmxTeeUI;fmx;FireDACIBDriver;fmxdae;vclib;dbexpress;IndyCore;vclx;dsnap;FireDACCommon;RESTBackendComponents;VCLRESTComponents;soapserver;vclie;bindengine;DBXMySQLDriver;CloudService;FireDACMySQLDriver;FireDACCommonODBC;FireDACCommonDriver;inet;bindcompdbx;IndyIPCommon;vcl;IndyIPServer;IndySystem;dsnapcon;FireDACMSAccDriver;fmxFireDAC;vclimg;TeeDB;FireDAC;FireDACSqliteDriver;FireDACPgDriver;ibmonitor;FMXTee;FIBPlus_D26;ipstudiowinclient;soaprtl;DbxCommonDriver;ibxpress;Tee;xmlrtl;soapmidas;ibxbindings;fmxobj;vclwinx;GR32_R;rtl;DbxClientDriver;CustomIPTransport;vcldsnap;bindcomp;appanalytics;ipstudiowin;officeXPrt;IndyIPClient;bindcompvcl;TeeUI;dbxcds;VclSmp;adortl;dsnapxml;dbrtl;inetdbxpress;IndyProtocols;fmxase;$(DCC_UsePackage)</DCC_UsePackage>
@@ -185,6 +187,8 @@
         <DCC_RemoteDebug>false</DCC_RemoteDebug>
         <AppEnableRuntimeThemes>true</AppEnableRuntimeThemes>
         <AppDPIAwarenessMode>PerMonitorV2</AppDPIAwarenessMode>
+        <VerInfo_IncludeVerInfo>true</VerInfo_IncludeVerInfo>
+        <VerInfo_Locale>1033</VerInfo_Locale>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Cfg_1_Win64)'!=''">
         <AppEnableRuntimeThemes>true</AppEnableRuntimeThemes>
@@ -307,6 +311,13 @@
                         <Overwrite>true</Overwrite>
                     </Platform>
                 </DeployFile>
+                <DeployFile LocalName="mesh\raquetes\pngegg48x.png" Configuration="Debug" Class="UWP_DelphiLogo44">
+                    <Platform Name="Win32">
+                        <RemoteDir>Assets\</RemoteDir>
+                        <RemoteName>Logo44x44.png</RemoteName>
+                        <Overwrite>true</Overwrite>
+                    </Platform>
+                </DeployFile>
                 <DeployFile LocalName="mesh\raquetes\pngegg960x720.png" Configuration="Debug" Class="Android_SplashImage960">
                     <Platform Name="Android">
                         <RemoteName>splash_image.png</RemoteName>
@@ -316,6 +327,13 @@
                 <DeployFile LocalName="mesh\raquetes\pngegg96x.png" Configuration="Debug" Class="Android_NotificationIcon96">
                     <Platform Name="Android">
                         <RemoteName>ic_notification.png</RemoteName>
+                        <Overwrite>true</Overwrite>
+                    </Platform>
+                </DeployFile>
+                <DeployFile LocalName="mesh\raquetes\pngegg144x.png" Configuration="Debug" Class="UWP_DelphiLogo150">
+                    <Platform Name="Win32">
+                        <RemoteDir>Assets\</RemoteDir>
+                        <RemoteName>Logo150x150.png</RemoteName>
                         <Overwrite>true</Overwrite>
                     </Platform>
                 </DeployFile>

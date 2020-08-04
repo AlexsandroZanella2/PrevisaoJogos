@@ -238,9 +238,7 @@ type
     Layout55: TLayout;
     Image9: TImage;
     Image10: TImage;
-    Image11: TImage;
     Image12: TImage;
-    Image13: TImage;
     Image14: TImage;
     ImageList1: TImageList;
     Layout56: TLayout;
@@ -291,7 +289,6 @@ type
     procedure sbCancelaEdicDadosClick(Sender: TObject);
     procedure RoundRect8Click(Sender: TObject);
     procedure Label27Click(Sender: TObject);
-    procedure VertScrollBox2Click(Sender: TObject);
     procedure SpeedButton7Click(Sender: TObject);
     procedure CriaLayoutJogo(cCodJogo, cCompeticao, cJogador1, cJogador2, cResultado,
                              cTipo, cDataJogo, cNumSets, cPontosJ1, cPontosJ2, cTotalPontos, cProb1, cProb2,
@@ -316,6 +313,11 @@ type
       procedure CriaLabelSeparador;
     procedure Button1Click(Sender: TObject);
     procedure Label12Click(Sender: TObject);
+    procedure Image9Click(Sender: TObject);
+    procedure Image10Click(Sender: TObject);
+    procedure Image14Click(Sender: TObject);
+    procedure Image12Click(Sender: TObject);
+    procedure stMenuClick(Sender: TObject);
 
   private
     { Private declarations }
@@ -401,6 +403,30 @@ const CorCinza        = TColor($D3D3D3)   ;
 implementation
 
 {$R *.fmx}
+{$R *.LgXhdpiTb.fmx ANDROID}
+{$R *.LgXhdpiPh.fmx ANDROID}
+{$R *.Surface.fmx MSWINDOWS}
+{$R *.Windows.fmx MSWINDOWS}
+{$R *.NmXhdpiPh.fmx ANDROID}
+{$R *.iPhone55in.fmx IOS}
+{$R *.iPhone47in.fmx IOS}
+{$R *.iPhone4in.fmx IOS}
+{$R *.iPad.fmx IOS}
+{$R *.Macintosh.fmx MACOS}
+
+{$IF DEFINED (ANDROID)}
+function OpenURL(const URL: string; const DisplayError: Boolean = False): Boolean;
+var
+  Intent: JIntent;
+begin
+  Intent := TJIntent.Create;
+  Intent.setAction(TJIntent.JavaClass.ACTION_VIEW);
+  Intent.setData(StrToJURI(URL
+  ));
+  SharedActivity.startActivity(Intent); //<- vai chamar o navegador e carregar o website declarado na linha acima.
+end;
+
+{$ENDIF}
 
 procedure TForm15.DestroyJogos;
 var
@@ -984,6 +1010,50 @@ begin
 end;
 
 
+procedure TForm15.Image10Click(Sender: TObject);
+begin
+    {$if defined(WINDOWS)}
+      ShellExecute(Handle, 'open', 'https://www.instagram.com/bots_tenisdemesa/', '', '', 1);
+    {$ENDIF}
+    {$IF DEFINED(ANDROID)}
+      OpenURL('https://www.instagram.com/bots_tenisdemesa/',false);
+    {$ENDIF}
+end;
+
+procedure TForm15.Image12Click(Sender: TObject);
+begin
+    {$if defined(WINDOWS)}
+      ShellExecute(Handle, 'open', 'botstenisdemesa@gmail.com', '', '', 1);
+    {$ENDIF}
+    {$IF DEFINED(ANDROID)}
+      OpenURL('botstenisdemesa@gmail.com',false);
+    {$ENDIF}
+end;
+
+procedure TForm15.Image14Click(Sender: TObject);
+begin
+    {$if defined(WINDOWS)}
+      ShellExecute(Handle, 'open', 'https://www.youtube.com/channel/UCttdgGH0tut_i2JsK7sqXWQ?view_as=subscriber', '', '', 1);
+    {$ENDIF}
+    {$IF DEFINED(ANDROID)}
+      OpenURL('https://www.youtube.com/channel/UCttdgGH0tut_i2JsK7sqXWQ?view_as=subscriber',false);
+    {$ENDIF}
+end;
+
+procedure TForm15.Image9Click(Sender: TObject);
+begin
+//
+    {$if defined(WINDOWS)}
+      ShellExecute(Handle, 'open', 'https://www.facebook.com/botstenisdemesa', '', '', 1);
+    {$ENDIF}
+    {$IF DEFINED(ANDROID)}
+      OpenURL('https://www.facebook.com/botstenisdemesa',false);
+    {$ENDIF}
+    {$IF DEFINED(IOS)}
+    //
+    {$ENDIF}
+end;
+
 procedure TForm15.DeletaSystemIni;
 begin
   try
@@ -1091,24 +1161,6 @@ begin
   end;
 end;
 
-procedure TForm15.VertScrollBox2Click(Sender: TObject);
-begin
-
-end;
-
-{$IF DEFINED (ANDROID)}
-function OpenURL(const URL: string; const DisplayError: Boolean = False): Boolean;
-var
-  Intent: JIntent; { Não tenho muito certeza qual unit pertence a JIntent }
-begin
-  Intent := TJIntent.Create;
-  Intent.setAction(TJIntent.JavaClass.ACTION_VIEW);
-  Intent.setData(StrToJURI(URL
-  ));
-  SharedActivity.startActivity(Intent); //<- vai chamar o navegador e carregar o website declarado na linha acima.
-end;
-{$ENDIF}
-
 procedure TForm15.Label12Click(Sender: TObject);
 var
 retorno : tstringlist;
@@ -1129,6 +1181,16 @@ begin
       OpenURL('http://mpago.la/2AzhhSN',false)
     end else if checkbox5.IsChecked then begin
       OpenURL('https://www.mercadopago.com.br/checkout/v1/redirect?pref_id=192089083-9fe17bb7-8ee5-4863-9722-0d9bc3866ad5',false)
+    end else begin
+      showMessage('Selecione uma opção ou insira sua chave!');
+    end;
+    retorno.Clear;
+{$ENDIF}
+{$IF DEFINED(WINDOWS)}
+     else   if CheckBox3.IsChecked then begin
+      ShellExecute(Handle, 'open', 'http://mpago.la/2AzhhSN', '', '', 1);
+    end else if checkbox5.IsChecked then begin
+      ShellExecute(Handle, 'open', 'https://www.mercadopago.com.br/checkout/v1/redirect?pref_id=192089083-9fe17bb7-8ee5-4863-9722-0d9bc3866ad5', '', '', 1);
     end else begin
       showMessage('Selecione uma opção ou insira sua chave!');
     end;
@@ -1158,8 +1220,14 @@ begin
     end;
 
 {$ENDIF}
-{$IF DEFINED (MSWINDOWS)}
-
+{$IF DEFINED (WINDOWS)}
+    if CheckBox1.IsChecked then begin
+      ShellExecute(Handle, 'open', 'http://mpago.la/2AzhhSN', '', '', 1);
+    end else if checkbox2.IsChecked then begin
+      ShellExecute(Handle, 'open', 'https://www.mercadopago.com.br/checkout/v1/redirect?pref_id=192089083-9fe17bb7-8ee5-4863-9722-0d9bc3866ad5', '', '', 1);
+    end else begin
+      showMessage('Selecione uma opção ou insira sua chave!');
+    end;
 {$ENDIF}
 end;
 
@@ -1460,6 +1528,15 @@ end;
 procedure TForm15.SpeedButton9Click(Sender: TObject);
 begin
    TabControl3.ActiveTab := TabItem2;
+end;
+
+procedure TForm15.stMenuClick(Sender: TObject);
+begin
+   if MultiView1.Visible = true then begin
+     MultiView1.Visible := false;
+   end else begin
+     MultiView1.Visible := true;
+   end;
 end;
 
 procedure TForm15.Button1Click(Sender: TObject);
@@ -1859,6 +1936,13 @@ end;
 procedure TForm15.FormCreate(Sender: TObject);
 
 begin
+      stMenu.OnClick := nil;
+    {$if defined(MSWINDOWS)}
+      MultiView1.Parent := vsPrincipal;
+      MultiView1.Align := TAlignLayout.MostLeft;
+      MultiView1.Visible := false;
+      stMenu.OnClick := stMenuClick;
+    {$ENDIF}
     try
      TabControl3.ActiveTab := TabItem7;
      logOK := false;
@@ -1873,6 +1957,7 @@ begin
     except
       ShowMessage('Erro Fatal na inicialização!');
     end;
+    //MultiView1.Visible := false;
 end;
 
 procedure TForm15.sbCancelaEdicDadosClick(Sender: TObject);

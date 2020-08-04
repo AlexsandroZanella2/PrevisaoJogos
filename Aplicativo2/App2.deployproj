@@ -5,12 +5,30 @@
     </ProjectExtensions>
     <PropertyGroup>
         <DeviceId Condition="'$(Platform)'=='Android'">DQBUBMMVNRA6DEKF</DeviceId>
-        <DeviceId Condition="'$(Platform)'=='Android64'">DQBUBMMVNRA6DEKF</DeviceId>
+        <DeviceId Condition="'$(Platform)'=='Android64'"/>
     </PropertyGroup>
     <ItemGroup Condition="'$(Platform)'=='iOSDevice64'"/>
     <ItemGroup Condition="'$(Platform)'=='Win64'"/>
     <ItemGroup Condition="'$(Platform)'=='iOSDevice32'"/>
     <ItemGroup Condition="'$(Platform)'=='Win32'">
+        <DeployFile Include="mesh\raquetes\pngegg48x.png" Condition="'$(Config)'=='Debug'">
+            <RemoteDir>App2\Assets\</RemoteDir>
+            <RemoteName>Logo44x44.png</RemoteName>
+            <DeployClass>UWP_DelphiLogo44</DeployClass>
+            <Operation>1</Operation>
+            <LocalCommand/>
+            <RemoteCommand/>
+            <Overwrite>True</Overwrite>
+        </DeployFile>
+        <DeployFile Include="mesh\raquetes\pngegg144x.png" Condition="'$(Config)'=='Debug'">
+            <RemoteDir>App2\Assets\</RemoteDir>
+            <RemoteName>Logo150x150.png</RemoteName>
+            <DeployClass>UWP_DelphiLogo150</DeployClass>
+            <Operation>1</Operation>
+            <LocalCommand/>
+            <RemoteCommand/>
+            <Overwrite>True</Overwrite>
+        </DeployFile>
         <DeployFile Include="Win32\Debug\App2.exe" Condition="'$(Config)'=='Debug'">
             <RemoteDir>App2\</RemoteDir>
             <RemoteName>App2.exe</RemoteName>
