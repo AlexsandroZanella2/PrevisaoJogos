@@ -20,7 +20,7 @@ Utilize Delphi Community 10.3 ou superior. Não oram usados componentes não nat
 
 ### Software Com direitos de uso Restritos
 
-Você pode Usar e até mesmo comercializar este sotware integral ou parcialmente, porém caso tenha qualquer lucro, independente do valor, deve ser pago 10% a Alexsandro Zanella, Desenvolvedor desse software: alexsandro.zanella@wmcsistemas.com ou nodusthb@gmail.com
+Você pode Usar e até mesmo comercializar este sotware integral ou parcialmente, porém caso tenha qualquer receita proveniente do uso, comercio ou distribuição deste software e/ou seu código, integral ou parcialmete, independente do valor, deve ser pago 10% da receita bruta a Alexsandro Zanella, Desenvolvedor desse software: alexsandro.zanella@wmcsistemas.com ou nodusthb@gmail.com
 
 
 ### Observações:
