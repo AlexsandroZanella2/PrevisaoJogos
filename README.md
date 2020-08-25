@@ -1,10 +1,11 @@
 # Aplicativo de Probabilidade de Jogos de Tenis de Mesa
  
 Conteúdo:
-)Aplicativo Multiplataforma em Delphi FMX: Aplicativo para exibição dos Resultados de jogos Passados e probabilidades dos jogos futuros.
-)WebServer Rest, construído inteiramente em Delphi Community Edition: Fornece acesso aos dados do banco de dados na nuvem para o aplicativo.
-)Banco de Dados Firebird 2.5: É onde os dados de usuários e jogos ficam salvos. Necessário instalar Firebird 2.5 para usar.
-)WebScrapper Windows: Programa que deve ficar realizado a coleta dos dados em tempo real dos jogos de tenis de mesa e aciona quando necessário o programa de cálculo das probabilidades dos jogos futuros.
+
+1) Aplicativo Multiplataforma em Delphi FMX: Aplicativo para exibição dos Resultados de jogos Passados e probabilidades dos jogos futuros;
+2) WebServer Rest, construído inteiramente em Delphi Community Edition: Fornece acesso aos dados do banco de dados na nuvem para o aplicativo;
+3) Banco de Dados Firebird 2.5: É onde os dados de usuários e jogos ficam salvos. Necessário instalar Firebird 2.5 para usar;
+4) WebScrapper Windows: Programa que deve ficar realizado a coleta dos dados em tempo real dos jogos de tenis de mesa e aciona quando necessário o programa de cálculo das probabilidades dos jogos futuros.
 
 ## Como Instalar:
 
