@@ -16,22 +16,21 @@
 
 ## Como Compilar:
 
-Utilize Delphi Community 10.3 ou superior. Não oram usados componentes não nativos, basta procurar pelos links e alterar o endereço no-ip para o seu próprio endereço.
+Utilize Delphi Community 10.3 ou superior. Não foram usados componentes não nativos, basta procurar pelos links e alterar o endereço no-ip para o seu próprio endereço.
 
 
 ### Software Com direitos de uso Restritos
 
-Você pode Usar e até mesmo comercializar este sotware integral ou parcialmente, porém caso tenha qualquer receita proveniente do uso, comercio ou distribuição deste software e/ou seu código, integral ou parcialmete, independente do valor, deve ser pago 10% da receita bruta a Alexsandro Zanella, Desenvolvedor desse software: alexsandro.zanella@wmcsistemas.com ou nodusthb@gmail.com
+Você pode Usar e até mesmo comercializar este sotware integral ou parcialmente, porém caso tenha qualquer receita proveniente do uso, comercio ou distribuição deste software e/ou seu código, integral ou parcialmete, independente do valor, deve ser pago 10% da receita bruta a [Alexsandro Zanella, Desenvolvedor desse software.](https://www.linkedin.com/in/alexsandro-zanella-arruda-0b364b1b1/)
 
 
 
 ### Observações:
 
-O código disponibilizado nesse reposítorio está incompleto. Para obter uma versão melhorada, completa e sem bugs, converse com: alexsandro.zanella@wmcsistemas.com ou nodusthb@gmail.com
+O código disponibilizado nesse reposítorio está incompleto. Para obter uma versão melhorada, completa e sem bugs, converse com [Alexsandro Zanella](https://www.linkedin.com/in/alexsandro-zanella-arruda-0b364b1b1/)
 
 
 
 ##### Sobre o desenvolvedor:
 
-Ex-Militar, Atualmente Inspetor de Qualidade na WMC Software e programador Freelancer, tem como maior especialidade sistemas de gestão, WebScrappers e integrações. Fique livre para pedir ajuda, sugestões, solicitar código, produtos ou apenas conversar sobre programação:
-Alexsandro.Zanella@wmcsistemas.com; nodusthb@gmail.com; WPP: +55 54 99124-5573
+Ex-Militar, Programador, tem como maior especialidade sistemas de gestão, WebScrappers, integrações e Apps Multiplataforma. [Fique livre para pedir ajuda, sugestões, solicitar código, produtos ou apenas conversar sobre programação](https://www.linkedin.com/in/alexsandro-zanella-arruda-0b364b1b1/)
